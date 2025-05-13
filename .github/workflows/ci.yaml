@@ -1,4 +1,4 @@
-name: parse-mqtt-to-kafka-workflow
+name: parse-mqttcan-to-kafka-workflow
 on:
   push:
     branches:
@@ -26,4 +26,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: rogeriocassares/parse-mqtt-to-kafka:0.3.40
+          tags: rogeriocassares/parse-mqttcan-to-kafka:0.1
