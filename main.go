@@ -1,9 +1,10 @@
 package main
 
 import (
-	// "encoding/base64"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log"
 
 	// "log"
 	"math"
@@ -11,21 +12,57 @@ import (
 	"strconv"
 	"strings"
 
-	// "time"
+	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/google/uuid"
 )
 
-// type CanId1 struct {
-// 	EngineOilTemperature float64 `json:"engineOilTemperature"`
-// 	EngineOilPressure    float64 `json:"engineOilPressure"`
-// }
+//	type CanId1 struct {
+//		EngineOilTemperature float64 `json:"engineOilTemperature"`
+//		EngineOilPressure    float64 `json:"engineOilPressure"`
+//	}
+type CarDynamics struct {
+	GroundSpeed    float64 `json:"groundSpeed"`
+	GLateral       float64 `json:"gLateral"`
+	GLonggitudinal float64 `json:"gLongitudinal"`
+	BrakePressure  float64 `json:"brakePressure"`
+}
+
+type GPSLongitude struct {
+	GPSLongitude float64 `json:"gpsLongitude"`
+}
+
+type CarEngine struct {
+	EngineRPM     float64 `json:"engineRPM"`
+	Gear          float64 `json:"gear"`
+	ThrottlePos   float64 `json:"ThrottlePos"`
+	SteeringAngle float64 `json:"steeringAngle"`
+}
+
+type GPSLatitude struct {
+	GPSLatitude float64 `json:"gpsLatitude"`
+}
+
+type GPSOthers struct {
+	GPSAltitude float64 `json:"gpsAltitude"`
+	GPSHeading  float64 `json:"gpsHeading"`
+	GPSSpeed    float64 `json:"gpsSpeed"`
+	GPSSatsUsed float64 `json:"gpsSatsUsed"`
+}
 
 type CarCanData struct {
 	EngineOilTemperature float64 `json:"engineOilTemperature"`
 	EngineOilPressure    float64 `json:"engineOilPressure"`
+	GroundSpeed          float64 `json:"groundSpeed"`
+	GLateral             float64 `json:"gLateral"`
+	GLongitudinal        float64 `json:"gLongitudinal"`
+	BrakePressure        float64 `json:"brakePressure"`
+	EngineRPM            float64 `json:"engineRPM"`
+	Gear                 float64 `json:"gear"`
+	ThrottlePosition     float64 `json:"throttlePosition"`
+	SteeringAngle        float64 `json:"steeringAngle"`
 }
 
 type ICCan struct {
@@ -47,7 +84,8 @@ type H2Can struct {
 }
 
 type CarUp struct {
-	CarMsg    string `json:"carMsg"`
+	Id        string `json:"id"`
+	Data      string `json:"data"`
 	Timestamp int64  `json:"timestamp"`
 }
 
@@ -83,6 +121,15 @@ func roundFloat(val float64, precision uint) float64 {
 // OpenDataTelemetry/FSAELive/Car/Tracking/mauaracing/up/wifi
 // OpenDataTelemetry/FSAELive/RaceTrack/SkidPad/mauaracing/up/wifi
 
+// CONVERT B64 to BYTE
+func b64ToByte(b64 string) ([]byte, error) {
+	b, err := base64.StdEncoding.DecodeString(b64)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return b, err
+}
+
 func protocolParserCanDataByCanId(canId string, canData []byte) string {
 	var carCanData CarCanData
 
@@ -90,22 +137,71 @@ func protocolParserCanDataByCanId(canId string, canData []byte) string {
 	i := 0
 
 	switch canId {
-	case "001":
-		v := uint64(canData[i+1]) << 8
-		v |= uint64(canData[i+2])
-		f := float64(v) / 100
-		carCanData.EngineOilTemperature = f
-		i = i + 2
+	// case "503": // gndSpd - gLat - gLong - brkPressure
+	// 	v := uint64(canData[i+1]) << 8
+	// 	v |= uint64(canData[i+2])
+	// 	f := float64(v) / 100
+	// 	carCanData.EngineOilTemperature = f
+	// 	i = i + 2
 
-		v = uint64(canData[i+1]) << 8
-		v |= uint64(canData[i+2])
-		f = float64(v) / 100
-		carCanData.EngineOilPressure = f
-		i = i + 2
+	// 	v = uint64(canData[i+1]) << 8
+	// 	v |= uint64(canData[i+2])
+	// 	f = float64(v) / 100
+	// 	carCanData.EngineOilPressure = f
+	// 	i = i + 2
 
-		// 	case "002":
+	case "503": // GroundSpeed, G-Lateral, G-Longitudinal, Brake Pressure
+		if len(canData) >= i+8 {
 
-		// 	case "003":
+			v := uint64(canData[i+1])<<8 | uint64(canData[i+2])
+			carCanData.GroundSpeed = float64(v) / 100
+			i += 2
+
+			v = uint64(canData[i+1])<<8 | uint64(canData[i+2])
+			carCanData.GLateral = float64(v) / 100
+			i += 2
+
+			v = uint64(canData[i+1])<<8 | uint64(canData[i+2])
+			carCanData.GLongitudinal = float64(v) / 100
+			i += 2
+
+			v = uint64(canData[i+1])<<8 | uint64(canData[i+2])
+			carCanData.BrakePressure = float64(v) / 100
+			i += 2
+		}
+
+	// case "504": // engRPM - Gear - Throttlepos - Steering Angle
+	// 	v := uint64(canData[i+1]) << 8
+	// 	v |= uint64(canData[i+2])
+	// 	f := float64(v) / 100
+	// 	carCanData.EngineOilTemperature = f
+	// 	i = i + 2
+
+	// 	v = uint64(canData[i+1]) << 8
+	// 	v |= uint64(canData[i+2])
+	// 	f = float64(v) / 100
+	// 	carCanData.EngineOilPressure = f
+	// 	i = i + 2
+	// }
+	case "504": // Engine RPM, Gear, Throttle Position, Steering Angle
+		if len(canData) >= i+8 {
+
+			v := uint64(canData[i+1])<<8 | uint64(canData[i+2])
+			carCanData.EngineRPM = float64(v) / 100
+			i += 2
+
+			v = uint64(canData[i+1])<<8 | uint64(canData[i+2])
+			carCanData.Gear = float64(v) / 100
+			i += 2
+
+			v = uint64(canData[i+1])<<8 | uint64(canData[i+2])
+			carCanData.ThrottlePosition = float64(v) / 100
+			i += 2
+
+			v = uint64(canData[i+1])<<8 | uint64(canData[i+2])
+			carCanData.SteeringAngle = float64(v) / 100
+			i += 2
+		}
 	}
 
 	p, err := json.Marshal(carCanData)
@@ -117,7 +213,7 @@ func protocolParserCanDataByCanId(canId string, canData []byte) string {
 }
 
 func parseCarMeasurement(deviceType string, measurement string, data string) string {
-	// Car, CAN | Tracking, 001#1122334455667788
+	// Car, CAN | Tracking, 001,1122334455667788
 	// MEASUREMENTS: Tracking, Inertias, CanIC, CanEV, CanH2
 	// CanIC -> 0X01, 0X02, 0X03
 	// CanEV -> 0X11, 0X12, 0X13
@@ -179,25 +275,55 @@ func parseCarMeasurement(deviceType string, measurement string, data string) str
 
 		case "Can":
 			//Can Message
-			// CAN: 001#1122334455667788
+			// CAN: 001,1122334455667788
 			var carCanData CarCanData
 
-			s := strings.Split(data, "#")
+			s := strings.Split(data, ",")
 			canId := s[0]
 			canData := s[1]
 
-			d := protocolParserCanDataByCanId(canId, []byte(canData))
+			// B64 to Byte
+			b, err := b64ToByte(canData)
+			if err != nil {
+				// fmt.Print(data)
+				log.Panic(err)
+			}
+
+			d := protocolParserCanDataByCanId(canId, b)
 			json.Unmarshal([]byte(d), &carCanData)
 			// fmt.Printf("protocolParserCanDataByCanId, d: %v\n", d)
 
-			sb.WriteString(`canId=`)
+			sb.WriteString(` canId=`)
 			sb.WriteString(canId)
 			sb.WriteString(`,canData=`)
 			sb.WriteString(canData)
-			sb.WriteString(`,engineOilTemperature=`)
-			sb.WriteString(strconv.FormatFloat(carCanData.EngineOilTemperature, 'f', -1, 64))
-			sb.WriteString(`,engineOilPressure=`)
-			sb.WriteString(strconv.FormatFloat(carCanData.EngineOilPressure, 'f', -1, 64))
+			if canId == "503" {
+				sb.WriteString(`,canMessage=CarDynamics`)
+				sb.WriteString(` brakePressure=`)
+				sb.WriteString(strconv.FormatFloat(carCanData.BrakePressure, 'f', -1, 64))
+				sb.WriteString(`,gLongitudinal=`)
+				sb.WriteString(strconv.FormatFloat(carCanData.GLongitudinal, 'f', -1, 64))
+				sb.WriteString(`,gLateral=`)
+				sb.WriteString(strconv.FormatFloat(carCanData.GLateral, 'f', -1, 64))
+				sb.WriteString(`,groundSpeed=`)
+				sb.WriteString(strconv.FormatFloat(carCanData.GroundSpeed, 'f', -1, 64))
+			}
+			if canId == "504" {
+				sb.WriteString(`,canMessage=CarEngine`)
+				sb.WriteString(` engineRPM=`)
+				sb.WriteString(strconv.FormatFloat(carCanData.EngineRPM, 'f', -1, 64))
+				sb.WriteString(`,gear=`)
+				sb.WriteString(strconv.FormatFloat(carCanData.Gear, 'f', -1, 64))
+				sb.WriteString(`,throttlePosition=`)
+				sb.WriteString(strconv.FormatFloat(carCanData.ThrottlePosition, 'f', -1, 64))
+				sb.WriteString(`,steeringAngle=`)
+				sb.WriteString(strconv.FormatFloat(carCanData.SteeringAngle, 'f', -1, 64))
+			}
+
+			// sb.WriteString(`,engineOilTemperature=`)
+			// sb.WriteString(strconv.FormatFloat(carCanData.EngineOilTemperature, 'f', -1, 64))
+			// sb.WriteString(`,engineOilPressure=`)
+			// sb.WriteString(strconv.FormatFloat(carCanData.EngineOilPressure, 'f', -1, 64))
 
 			// sb.WriteString(` `)
 			// sb.WriteString(`EngineOilTemperature=`)
@@ -233,7 +359,7 @@ func parseCar(measurement string, deviceType string, deviceId string, direction 
 	if direction == "up" {
 		json.Unmarshal([]byte(message), &carUp)
 
-		t := carUp.Timestamp
+		// t := carUp.Timestamp
 
 		// Measurement
 		sb.WriteString(measurement)
@@ -254,8 +380,12 @@ func parseCar(measurement string, deviceType string, deviceId string, direction 
 		// sb.WriteString(message)
 
 		// Timestamp_ns
+
+		now := time.Now()      // current local time
+		nsec := now.UnixNano() // number of nanoseconds since January 1, 1970 UTC
+
 		sb.WriteString(` `)
-		sb.WriteString(strconv.FormatInt(t, 10))
+		sb.WriteString(strconv.FormatInt(nsec, 10))
 	}
 
 	return sb.String()
