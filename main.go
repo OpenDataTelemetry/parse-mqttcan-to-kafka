@@ -63,6 +63,12 @@ type CarCanData struct {
 	Gear                 float64 `json:"gear"`
 	ThrottlePosition     float64 `json:"throttlePosition"`
 	SteeringAngle        float64 `json:"steeringAngle"`
+	GPSAltitude          float64 `json:"gpsAltitude"`
+	GPSHeading           float64 `json:"gpsHeading"`
+	GPSSpeed             float64 `json:"gpsSpeed"`
+	GPSSatsUsed          float64 `json:"gpsSatsUsed"`
+	GPSLatitude          float64 `json:"gpsLatitude"`
+	GPSLongitude         float64 `json:"gpsLongitude"`
 }
 
 type ICCan struct {
@@ -153,20 +159,20 @@ func protocolParserCanDataByCanId(canId string, canData []byte) string {
 	case "503": // GroundSpeed, G-Lateral, G-Longitudinal, Brake Pressure
 		if len(canData) >= i+8 {
 
-			v := uint64(canData[i+1])<<8 | uint64(canData[i+2])
-			carCanData.GroundSpeed = float64(v) / 100
+			v := uint64(canData[i+1])<<8 | uint64(canData[i+1])
+			carCanData.GroundSpeed = float64(v) / 10
 			i += 2
 
-			v = uint64(canData[i+1])<<8 | uint64(canData[i+2])
-			carCanData.GLateral = float64(v) / 100
+			v = uint64(canData[i+1])<<8 | uint64(canData[i+1])
+			carCanData.GLateral = (float64(v) - 32768) / 100
 			i += 2
 
-			v = uint64(canData[i+1])<<8 | uint64(canData[i+2])
-			carCanData.GLongitudinal = float64(v) / 100
+			v = uint64(canData[i+1])<<8 | uint64(canData[i+1])
+			carCanData.GLongitudinal = (float64(v) - 32768) / 100
 			i += 2
 
-			v = uint64(canData[i+1])<<8 | uint64(canData[i+2])
-			carCanData.BrakePressure = float64(v) / 100
+			v = uint64(canData[i+1])<<8 | uint64(canData[i+1])
+			carCanData.BrakePressure = float64(v) / 10
 			i += 2
 		}
 
@@ -185,23 +191,71 @@ func protocolParserCanDataByCanId(canId string, canData []byte) string {
 	// }
 	case "504": // Engine RPM, Gear, Throttle Position, Steering Angle
 		if len(canData) >= i+8 {
-
-			v := uint64(canData[i+1])<<8 | uint64(canData[i+2])
-			carCanData.EngineRPM = float64(v) / 100
+			v := uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.EngineRPM = float64(v)
 			i += 2
 
-			v = uint64(canData[i+1])<<8 | uint64(canData[i+2])
-			carCanData.Gear = float64(v) / 100
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.Gear = float64(v)
 			i += 2
 
-			v = uint64(canData[i+1])<<8 | uint64(canData[i+2])
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
 			carCanData.ThrottlePosition = float64(v) / 100
 			i += 2
 
-			v = uint64(canData[i+1])<<8 | uint64(canData[i+2])
-			carCanData.SteeringAngle = float64(v) / 100
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.SteeringAngle = (float64(v) - 32768) / 100
 			i += 2
 		}
+
+	case "502": // GPSAltitude GPSHeading GPSSpeed GPSSatsUsed
+		if len(canData) >= i+8 {
+			v := uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.GPSAltitude = float64(v) - 32768
+			i += 2
+
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.GPSHeading = (float64(v) - 32768) / 100
+			i += 2
+
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.GPSSpeed = float64(v)
+			i += 2
+
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.GPSSatsUsed = float64(v)
+			i += 2
+		}
+	case "500": //GPSLatitude
+		if len(canData) >= i+8 {
+			v := int64(canData[i])<<56 |
+				int64(canData[i+1])<<48 |
+				int64(canData[i+2])<<40 |
+				int64(canData[i+3])<<32 |
+				int64(canData[i+4])<<24 |
+				int64(canData[i+5])<<16 |
+				int64(canData[i+6])<<8 |
+				int64(canData[i+7])
+
+			carCanData.GPSLatitude = (float64(v) - math.Pow(2, 63)) / 1e15
+			i += 8
+		}
+
+	case "501": //GPSLongitude
+		if len(canData) >= i+8 {
+			v := int64(canData[i])<<56 |
+				int64(canData[i+1])<<48 |
+				int64(canData[i+2])<<40 |
+				int64(canData[i+3])<<32 |
+				int64(canData[i+4])<<24 |
+				int64(canData[i+5])<<16 |
+				int64(canData[i+6])<<8 |
+				int64(canData[i+7])
+
+			carCanData.GPSLongitude = (float64(v) - math.Pow(2, 63)) / 1e15
+			i += 8
+		}
+
 	}
 
 	p, err := json.Marshal(carCanData)
@@ -318,6 +372,27 @@ func parseCarMeasurement(deviceType string, measurement string, data string) str
 				sb.WriteString(strconv.FormatFloat(carCanData.ThrottlePosition, 'f', -1, 64))
 				sb.WriteString(`,steeringAngle=`)
 				sb.WriteString(strconv.FormatFloat(carCanData.SteeringAngle, 'f', -1, 64))
+			}
+			if canId == "502" {
+				sb.WriteString(`,canMessage=GPSOthers`)
+				sb.WriteString(` GPSAltitude=`)
+				sb.WriteString(strconv.FormatFloat(carCanData.GPSAltitude, 'f', -1, 64))
+				sb.WriteString(`,GPSHeading=`)
+				sb.WriteString(strconv.FormatFloat(carCanData.GPSHeading, 'f', -1, 64))
+				sb.WriteString(`,GPSSpeed=`)
+				sb.WriteString(strconv.FormatFloat(carCanData.GPSSpeed, 'f', -1, 64))
+				sb.WriteString(`,GPSSatsUsed=`)
+				sb.WriteString(strconv.FormatFloat(carCanData.GPSSatsUsed, 'f', -1, 64))
+			}
+			if canId == "500" {
+				sb.WriteString(`,canMessage=GPSLatitude`)
+				sb.WriteString(` GPSLatitude=`)
+				sb.WriteString(strconv.FormatFloat(carCanData.GPSLatitude, 'f', -1, 64))
+			}
+			if canId == "501" {
+				sb.WriteString(`,canMessage=GPSLongitude`)
+				sb.WriteString(` GPSLongitude=`)
+				sb.WriteString(strconv.FormatFloat(carCanData.GPSLongitude, 'f', -1, 64))
 			}
 
 			// sb.WriteString(`,engineOilTemperature=`)
