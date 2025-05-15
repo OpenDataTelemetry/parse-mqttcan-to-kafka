@@ -351,9 +351,9 @@ func parseCarMeasurement(deviceType string, measurement string, data string) str
 			sb.WriteString(canId)
 			if canId == "503" {
 				sb.WriteString(`,canMessage=CarDynamics`)
-				sb.WriteString(` canData=`)
+				sb.WriteString(` canData="`)
 				sb.WriteString(canData)
-				sb.WriteString(`,brakePressure=`)
+				sb.WriteString(`",brakePressure=`)
 				sb.WriteString(strconv.FormatFloat(carCanData.BrakePressure, 'f', -1, 64))
 				sb.WriteString(`,gLongitudinal=`)
 				sb.WriteString(strconv.FormatFloat(carCanData.GLongitudinal, 'f', -1, 64))
@@ -364,9 +364,9 @@ func parseCarMeasurement(deviceType string, measurement string, data string) str
 			}
 			if canId == "504" {
 				sb.WriteString(`,canMessage=CarEngine`)
-				sb.WriteString(` canData=`)
+				sb.WriteString(` canData="`)
 				sb.WriteString(canData)
-				sb.WriteString(`,engineRPM=`)
+				sb.WriteString(`",engineRPM=`)
 				sb.WriteString(strconv.FormatFloat(carCanData.EngineRPM, 'f', -1, 64))
 				sb.WriteString(`,gear=`)
 				sb.WriteString(strconv.FormatFloat(carCanData.Gear, 'f', -1, 64))
@@ -377,9 +377,9 @@ func parseCarMeasurement(deviceType string, measurement string, data string) str
 			}
 			if canId == "502" {
 				sb.WriteString(`,canMessage=GPSOthers`)
-				sb.WriteString(` canData=`)
+				sb.WriteString(` canData="`)
 				sb.WriteString(canData)
-				sb.WriteString(`,GPSAltitude=`)
+				sb.WriteString(`",GPSAltitude=`)
 				sb.WriteString(strconv.FormatFloat(carCanData.GPSAltitude, 'f', -1, 64))
 				sb.WriteString(`,GPSHeading=`)
 				sb.WriteString(strconv.FormatFloat(carCanData.GPSHeading, 'f', -1, 64))
@@ -390,16 +390,16 @@ func parseCarMeasurement(deviceType string, measurement string, data string) str
 			}
 			if canId == "500" {
 				sb.WriteString(`,canMessage=GPSLatitude`)
-				sb.WriteString(` canData=`)
+				sb.WriteString(` canData="`)
 				sb.WriteString(canData)
-				sb.WriteString(`,GPSLatitude=`)
+				sb.WriteString(`",GPSLatitude=`)
 				sb.WriteString(strconv.FormatFloat(carCanData.GPSLatitude, 'f', -1, 64))
 			}
 			if canId == "501" {
 				sb.WriteString(`,canMessage=GPSLongitude`)
-				sb.WriteString(` canData=`)
+				sb.WriteString(` canData="`)
 				sb.WriteString(canData)
-				sb.WriteString(`,GPSLongitude=`)
+				sb.WriteString(`",GPSLongitude=`)
 				sb.WriteString(strconv.FormatFloat(carCanData.GPSLongitude, 'f', -1, 64))
 			}
 
