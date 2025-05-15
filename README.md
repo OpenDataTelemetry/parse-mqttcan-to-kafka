@@ -1,6 +1,6 @@
-# parse-mqtt-to-kafka
+# parse-mqttcan-to-kafka
 
-ORGANIZATION=IMT DEVICE_TYPE=LNS BUCKET=SmartCampusMaua KAFKA_BROKER=localhost:9094 go run main.go
+MQTT_BROKER=mqtt.maua.br:1883 BUCKET=SmartCampusMaua KAFKA_BROKER=localhost:9094 go run main.go
 
 OpenDataTelemetry/IMT/LNS/SmartLight/{DeviceId}/up/imt
 OpenDataTelemetry/IMT/LNS/WaterTankLevel/{DeviceId}/up/atc

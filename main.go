@@ -498,7 +498,7 @@ func main() {
 	// sbMqttSubTopic.WriteString(ORGANIZATION)
 	// sbMqttSubTopic.WriteString("/")
 	// sbMqttSubTopic.WriteString(DEVICE_TYPE)
-	sbMqttSubTopic.WriteString("FSAELive/+/+/+/+/+")
+	sbMqttSubTopic.WriteString("FSAELive/Car/Can/mauaracing/up/sim7670g")
 	// sbMqttSubTopic.WriteString("#")
 	// sbMqttSubTopic.WriteString("/+/+/+")
 
@@ -569,7 +569,7 @@ func main() {
 		// 2. Process
 		// 2.1. Process Topic
 		s := strings.Split(incoming[0], "/")
-		fmt.Printf("\nTopic: %s", incoming[0])
+		fmt.Printf("\nTopic: %s\n", incoming[0])
 		// OpenDataTelemetry/FSAELive/Car/Can/mauaracing/up/wifi
 		organization := s[1]
 		deviceType := s[2]
