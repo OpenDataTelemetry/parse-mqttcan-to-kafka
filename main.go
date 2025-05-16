@@ -350,8 +350,10 @@ func parseCarMeasurement(deviceType string, measurement string, data string) str
 			sb.WriteString(`,canId=`)
 			sb.WriteString(canId)
 			if canId == "503" {
-				sb.WriteString(`,canMessage=CarDynamics`)
-				sb.WriteString(` canData="`)
+				sb.WriteString(`,deviceType=`)
+				sb.WriteString(deviceType)
+				sb.WriteString(`,message=CarDynamics`)
+				sb.WriteString(` data="`)
 				sb.WriteString(canData)
 				sb.WriteString(`",brakePressure=`)
 				sb.WriteString(strconv.FormatFloat(carCanData.BrakePressure, 'f', -1, 64))
@@ -363,8 +365,10 @@ func parseCarMeasurement(deviceType string, measurement string, data string) str
 				sb.WriteString(strconv.FormatFloat(carCanData.GroundSpeed, 'f', -1, 64))
 			}
 			if canId == "504" {
-				sb.WriteString(`,canMessage=CarEngine`)
-				sb.WriteString(` canData="`)
+				sb.WriteString(`,deviceType=`)
+				sb.WriteString(deviceType)
+				sb.WriteString(`,message=CarEngine`)
+				sb.WriteString(` data="`)
 				sb.WriteString(canData)
 				sb.WriteString(`",engineRPM=`)
 				sb.WriteString(strconv.FormatFloat(carCanData.EngineRPM, 'f', -1, 64))
@@ -376,8 +380,10 @@ func parseCarMeasurement(deviceType string, measurement string, data string) str
 				sb.WriteString(strconv.FormatFloat(carCanData.SteeringAngle, 'f', -1, 64))
 			}
 			if canId == "502" {
-				sb.WriteString(`,canMessage=GPSOthers`)
-				sb.WriteString(` canData="`)
+				sb.WriteString(`,deviceType=`)
+				sb.WriteString(deviceType)
+				sb.WriteString(`,message=GPSOthers`)
+				sb.WriteString(` data="`)
 				sb.WriteString(canData)
 				sb.WriteString(`",GPSAltitude=`)
 				sb.WriteString(strconv.FormatFloat(carCanData.GPSAltitude, 'f', -1, 64))
@@ -389,15 +395,19 @@ func parseCarMeasurement(deviceType string, measurement string, data string) str
 				sb.WriteString(strconv.FormatFloat(carCanData.GPSSatsUsed, 'f', -1, 64))
 			}
 			if canId == "500" {
-				sb.WriteString(`,canMessage=GPSLatitude`)
-				sb.WriteString(` canData="`)
+				sb.WriteString(`,deviceType=`)
+				sb.WriteString(deviceType)
+				sb.WriteString(`,message=GPSLatitude`)
+				sb.WriteString(` data="`)
 				sb.WriteString(canData)
 				sb.WriteString(`",GPSLatitude=`)
 				sb.WriteString(strconv.FormatFloat(carCanData.GPSLatitude, 'f', -1, 64))
 			}
 			if canId == "501" {
-				sb.WriteString(`,canMessage=GPSLongitude`)
-				sb.WriteString(` canData="`)
+				sb.WriteString(`,deviceType=`)
+				sb.WriteString(deviceType)
+				sb.WriteString(`,message=GPSLongitude`)
+				sb.WriteString(` data="`)
 				sb.WriteString(canData)
 				sb.WriteString(`",GPSLongitude=`)
 				sb.WriteString(strconv.FormatFloat(carCanData.GPSLongitude, 'f', -1, 64))
