@@ -350,8 +350,8 @@ func parseCarMeasurement(deviceType string, measurement string, data string) str
 			sb.WriteString(`,canId=`)
 			sb.WriteString(canId)
 			if canId == "503" {
-				sb.WriteString(`,deviceType=`)
-				sb.WriteString(deviceType)
+				// sb.WriteString(`,deviceType=`)
+				// sb.WriteString(deviceType)
 				sb.WriteString(`,message=CarDynamics`)
 				sb.WriteString(` data="`)
 				sb.WriteString(canData)
@@ -365,8 +365,8 @@ func parseCarMeasurement(deviceType string, measurement string, data string) str
 				sb.WriteString(strconv.FormatFloat(carCanData.GroundSpeed, 'f', -1, 64))
 			}
 			if canId == "504" {
-				sb.WriteString(`,deviceType=`)
-				sb.WriteString(deviceType)
+				// sb.WriteString(`,deviceType=`)
+				// sb.WriteString(deviceType)
 				sb.WriteString(`,message=CarEngine`)
 				sb.WriteString(` data="`)
 				sb.WriteString(canData)
@@ -380,8 +380,8 @@ func parseCarMeasurement(deviceType string, measurement string, data string) str
 				sb.WriteString(strconv.FormatFloat(carCanData.SteeringAngle, 'f', -1, 64))
 			}
 			if canId == "502" {
-				sb.WriteString(`,deviceType=`)
-				sb.WriteString(deviceType)
+				// sb.WriteString(`,deviceType=`)
+				// sb.WriteString(deviceType)
 				sb.WriteString(`,message=GPSOthers`)
 				sb.WriteString(` data="`)
 				sb.WriteString(canData)
@@ -395,8 +395,8 @@ func parseCarMeasurement(deviceType string, measurement string, data string) str
 				sb.WriteString(strconv.FormatFloat(carCanData.GPSSatsUsed, 'f', -1, 64))
 			}
 			if canId == "500" {
-				sb.WriteString(`,deviceType=`)
-				sb.WriteString(deviceType)
+				// sb.WriteString(`,deviceType=`)
+				// sb.WriteString(deviceType)
 				sb.WriteString(`,message=GPSLatitude`)
 				sb.WriteString(` data="`)
 				sb.WriteString(canData)
@@ -404,8 +404,8 @@ func parseCarMeasurement(deviceType string, measurement string, data string) str
 				sb.WriteString(strconv.FormatFloat(carCanData.GPSLatitude, 'f', -1, 64))
 			}
 			if canId == "501" {
-				sb.WriteString(`,deviceType=`)
-				sb.WriteString(deviceType)
+				// sb.WriteString(`,deviceType=`)
+				// sb.WriteString(deviceType)
 				sb.WriteString(`,message=GPSLongitude`)
 				sb.WriteString(` data="`)
 				sb.WriteString(canData)
@@ -458,14 +458,14 @@ func parseCar(measurement string, deviceType string, deviceId string, direction 
 		sb.WriteString(measurement)
 
 		// Tags
-		// sb.WriteString(`,deviceId=`)
-		// sb.WriteString()
-		// sb.WriteString(`,deviceType=`)
-		// sb.WriteString(deviceType)
-		// sb.WriteString(`,direction=`)
-		// sb.WriteString(direction)
-		// sb.WriteString(`,origin=`)
-		// sb.WriteString(etc)
+		sb.WriteString(`,deviceId=`)
+		sb.WriteString(deviceId)
+		sb.WriteString(`,deviceType=`)
+		sb.WriteString(deviceType)
+		sb.WriteString(`,direction=`)
+		sb.WriteString(direction)
+		sb.WriteString(`,origin=`)
+		sb.WriteString(etc)
 
 		// Fields
 		sb.WriteString(parseCarMeasurement(deviceType, measurement, message)) // Car, CAN | Tracking, 001#1122334455667788
