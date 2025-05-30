@@ -57,7 +57,8 @@ type InputTags struct {
 }
 
 type InputFields struct {
-	Data map[string]interface{} `json:"data"` // Timestamp uint64      `json:"timestamp"` // mandatory
+	// Data map[string]interface{} `json:"data"` // Timestamp uint64      `json:"timestamp"` // mandatory
+	Data string // Timestamp uint64      `json:"timestamp"` // mandatory
 }
 
 type InputMsgDataCan struct {
@@ -110,7 +111,7 @@ type CarCanData struct {
 	BrakePressure        float64 `json:"brakePressure"`
 	EngineRPM            float64 `json:"engineRPM"`
 	Gear                 float64 `json:"gear"`
-	ThrottlePos          float64 `json:"throttlePosition"`
+	ThrottlePos          float64 `json:"throttlePos"`
 	SteeringAngle        float64 `json:"steeringAngle"`
 	GPSAltitude          float64 `json:"gpsAltitude"`
 	GPSHeading           float64 `json:"gpsHeading"`
@@ -280,224 +281,224 @@ func protocolParserCanDataByCanId(canId string, canData []byte) string {
 	return string(p[:])
 }
 
-func parseMeasurementByDeviceType(deviceType string, measurement string, inputMsgData []byte) (map[string]interface{}, map[string]interface{}) {
-	// Car, CAN | Tracking, 001,1122334455667788
-	// MEASUREMENTS: Tracking, Inertias, CanIC, CanEV, CanH2
-	// CanIC -> 0X01, 0X02, 0X03
-	// CanEV -> 0X11, 0X12, 0X13
-	// CanH2 -> 0X21, 0X22, 0X23
+// func parseMeasurementByDeviceType(deviceType string, measurement string, inputMsgData []byte) (map[string]interface{}, map[string]interface{}) {
+// 	// Car, CAN | Tracking, 001,1122334455667788
+// 	// MEASUREMENTS: Tracking, Inertias, CanIC, CanEV, CanH2
+// 	// CanIC -> 0X01, 0X02, 0X03
+// 	// CanEV -> 0X11, 0X12, 0X13
+// 	// CanH2 -> 0X21, 0X22, 0X23
 
-	var sb strings.Builder
-	var output Output
+// 	var sb strings.Builder
+// 	var output Output
 
-	switch deviceType {
-	case "Car":
-		switch measurement {
-		case "Inertias":
-			var carInertias CarInertias
-			accX := carInertias.AccX
-			accY := carInertias.AccY
-			accZ := carInertias.AccZ
-			gyrX := carInertias.GyrX
-			gyrY := carInertias.GyrY
-			gyrZ := carInertias.GyrZ
-			magX := carInertias.MagX
-			magY := carInertias.MagY
-			magZ := carInertias.MagZ
+// 	switch deviceType {
+// 	case "Car":
+// 		switch measurement {
+// 		case "Inertias":
+// 			var carInertias CarInertias
+// 			accX := carInertias.AccX
+// 			accY := carInertias.AccY
+// 			accZ := carInertias.AccZ
+// 			gyrX := carInertias.GyrX
+// 			gyrY := carInertias.GyrY
+// 			gyrZ := carInertias.GyrZ
+// 			magX := carInertias.MagX
+// 			magY := carInertias.MagY
+// 			magZ := carInertias.MagZ
 
-			sb.WriteString(` `)
-			sb.WriteString(`,accX=`)
-			sb.WriteString(strconv.FormatFloat(accX, 'f', -1, 64))
-			sb.WriteString(`,accY=`)
-			sb.WriteString(strconv.FormatFloat(accY, 'f', -1, 64))
-			sb.WriteString(`,accZ=`)
-			sb.WriteString(strconv.FormatFloat(accZ, 'f', -1, 64))
-			sb.WriteString(`,gyrX=`)
-			sb.WriteString(strconv.FormatFloat(gyrX, 'f', -1, 64))
-			sb.WriteString(`,gyrY=`)
-			sb.WriteString(strconv.FormatFloat(gyrY, 'f', -1, 64))
-			sb.WriteString(`,gyrZ=`)
-			sb.WriteString(strconv.FormatFloat(gyrZ, 'f', -1, 64))
-			sb.WriteString(`,magX`)
-			sb.WriteString(strconv.FormatFloat(magX, 'f', -1, 64))
-			sb.WriteString(`,magY`)
-			sb.WriteString(strconv.FormatFloat(magY, 'f', -1, 64))
-			sb.WriteString(`,magZ`)
-			sb.WriteString(strconv.FormatFloat(magZ, 'f', -1, 64))
-		case "Tracking":
-			var carTracking CarTracking
-			latitude := carTracking.Latitude
-			longitude := carTracking.Longitude
-			altitude := carTracking.Altitude
+// 			sb.WriteString(` `)
+// 			sb.WriteString(`,accX=`)
+// 			sb.WriteString(strconv.FormatFloat(accX, 'f', -1, 64))
+// 			sb.WriteString(`,accY=`)
+// 			sb.WriteString(strconv.FormatFloat(accY, 'f', -1, 64))
+// 			sb.WriteString(`,accZ=`)
+// 			sb.WriteString(strconv.FormatFloat(accZ, 'f', -1, 64))
+// 			sb.WriteString(`,gyrX=`)
+// 			sb.WriteString(strconv.FormatFloat(gyrX, 'f', -1, 64))
+// 			sb.WriteString(`,gyrY=`)
+// 			sb.WriteString(strconv.FormatFloat(gyrY, 'f', -1, 64))
+// 			sb.WriteString(`,gyrZ=`)
+// 			sb.WriteString(strconv.FormatFloat(gyrZ, 'f', -1, 64))
+// 			sb.WriteString(`,magX`)
+// 			sb.WriteString(strconv.FormatFloat(magX, 'f', -1, 64))
+// 			sb.WriteString(`,magY`)
+// 			sb.WriteString(strconv.FormatFloat(magY, 'f', -1, 64))
+// 			sb.WriteString(`,magZ`)
+// 			sb.WriteString(strconv.FormatFloat(magZ, 'f', -1, 64))
+// 		case "Tracking":
+// 			var carTracking CarTracking
+// 			latitude := carTracking.Latitude
+// 			longitude := carTracking.Longitude
+// 			altitude := carTracking.Altitude
 
-			sb.WriteString(` `)
-			sb.WriteString(`latitude=`)
-			sb.WriteString(latitude)
-			sb.WriteString(`,longitude=`)
-			sb.WriteString(longitude)
-			sb.WriteString(`,altitude=`)
-			sb.WriteString(altitude)
+// 			sb.WriteString(` `)
+// 			sb.WriteString(`latitude=`)
+// 			sb.WriteString(latitude)
+// 			sb.WriteString(`,longitude=`)
+// 			sb.WriteString(longitude)
+// 			sb.WriteString(`,altitude=`)
+// 			sb.WriteString(altitude)
 
-		case "Can":
-			var inputMsgDataCan InputMsgDataCan
-			err := json.Unmarshal(inputMsgData, &inputMsgDataCan)
-			if err != nil {
-				log.Fatalf("Error unmarshaling JSON: %v", err)
-			}
+// 		case "Can":
+// 			var inputMsgDataCan InputMsgDataCan
+// 			err := json.Unmarshal(inputMsgData, &inputMsgDataCan)
+// 			if err != nil {
+// 				log.Fatalf("Error unmarshaling JSON: %v", err)
+// 			}
 
-			canId := inputMsgDataCan.CanId
-			canData := inputMsgDataCan.CanData
+// 			canId := inputMsgDataCan.CanId
+// 			canData := inputMsgDataCan.CanData
 
-			// B64 to Byte
-			b, err := b64ToByte(canData)
-			if err != nil {
-				// fmt.Print(data)
-				log.Panic(err)
-			}
+// 			// B64 to Byte
+// 			b, err := b64ToByte(canData)
+// 			if err != nil {
+// 				// fmt.Print(data)
+// 				log.Panic(err)
+// 			}
 
-			var carCanData CarCanData
-			d := protocolParserCanDataByCanId(canId, b)
-			json.Unmarshal([]byte(d), &carCanData)
+// 			var carCanData CarCanData
+// 			d := protocolParserCanDataByCanId(canId, b)
+// 			json.Unmarshal([]byte(d), &carCanData)
 
-			// if canId == "500" {
-			// 	var gpsLatitude GPSLatitude
-			// 	gpsLatitude.GPSLatitude = carCanData.GPSLatitude
+// 			// if canId == "500" {
+// 			// 	var gpsLatitude GPSLatitude
+// 			// 	gpsLatitude.GPSLatitude = carCanData.GPSLatitude
 
-			// 	// tags := map[string]interface{}{
-			// 	// 	"deviceType": deviceType,
-			// 	// 	"canId":      canId,
-			// 	// 	"message":    "CarDynamics",
-			// 	// }
+// 			// 	// tags := map[string]interface{}{
+// 			// 	// 	"deviceType": deviceType,
+// 			// 	// 	"canId":      canId,
+// 			// 	// 	"message":    "CarDynamics",
+// 			// 	// }
 
-			// 	tags = {
-			// 		"deviceType": deviceType,
-			// 		"canId":      canId,
-			// 		"message":    "CarDynamics",
-			// 	}
-			// 	fields := map[string]interface{}{
-			// 		"data": canData,
-			// 	}
+// 			// 	tags = {
+// 			// 		"deviceType": deviceType,
+// 			// 		"canId":      canId,
+// 			// 		"message":    "CarDynamics",
+// 			// 	}
+// 			// 	fields := map[string]interface{}{
+// 			// 		"data": canData,
+// 			// 	}
 
-			// 	output.Tags = tags
-			// 	// output. = fields
+// 			// 	output.Tags = tags
+// 			// 	// output. = fields
 
-			// 	p, err := json.Marshal(output)
-			// 	if err != nil {
-			// 		fmt.Println(err)
-			// 		return "Can data parsed wrongly"
-			// 	}
-			// 	return string(p[:])
-			// }
-			// if canId == "501" {
-			// 	var gpsLongitude GPSLongitude
-			// 	gpsLongitude.GPSLongitude = carCanData.GPSLongitude
-			// 	tags := map[string]interface{}{
-			// 		"deviceType": deviceType,
-			// 		"canId":      canId,
-			// 		"message":    "CarDynamics",
-			// 	}
-			// 	fields := map[string]interface{}{
-			// 		"data": canData,
-			// 	}
+// 			// 	p, err := json.Marshal(output)
+// 			// 	if err != nil {
+// 			// 		fmt.Println(err)
+// 			// 		return "Can data parsed wrongly"
+// 			// 	}
+// 			// 	return string(p[:])
+// 			// }
+// 			// if canId == "501" {
+// 			// 	var gpsLongitude GPSLongitude
+// 			// 	gpsLongitude.GPSLongitude = carCanData.GPSLongitude
+// 			// 	tags := map[string]interface{}{
+// 			// 		"deviceType": deviceType,
+// 			// 		"canId":      canId,
+// 			// 		"message":    "CarDynamics",
+// 			// 	}
+// 			// 	fields := map[string]interface{}{
+// 			// 		"data": canData,
+// 			// 	}
 
-			// 	// var outputMsg OutputMsg
-			// 	output.Tags = tags
-			// 	output.Fields = fields
+// 			// 	// var outputMsg OutputMsg
+// 			// 	output.Tags = tags
+// 			// 	output.Fields = fields
 
-			// 	p, err := json.Marshal(outputMsg)
-			// 	if err != nil {
-			// 		fmt.Println(err)
-			// 		return "Can data parsed wrongly"
-			// 	}
-			// 	return string(p[:])
-			// }
-			// if canId == "502" {
-			// 	var gpsOthers GPSOthers
-			// 	gpsOthers.GPSAltitude = carCanData.GPSAltitude
-			// 	gpsOthers.GPSHeading = carCanData.GPSHeading
-			// 	gpsOthers.GPSSpeed = carCanData.GPSSpeed
-			// 	gpsOthers.GPSSatsUsed = carCanData.GPSSatsUsed
+// 			// 	p, err := json.Marshal(outputMsg)
+// 			// 	if err != nil {
+// 			// 		fmt.Println(err)
+// 			// 		return "Can data parsed wrongly"
+// 			// 	}
+// 			// 	return string(p[:])
+// 			// }
+// 			// if canId == "502" {
+// 			// 	var gpsOthers GPSOthers
+// 			// 	gpsOthers.GPSAltitude = carCanData.GPSAltitude
+// 			// 	gpsOthers.GPSHeading = carCanData.GPSHeading
+// 			// 	gpsOthers.GPSSpeed = carCanData.GPSSpeed
+// 			// 	gpsOthers.GPSSatsUsed = carCanData.GPSSatsUsed
 
-			// 	tags := map[string]interface{}{
-			// 		"deviceType": deviceType,
-			// 		"canId":      canId,
-			// 		"message":    "CarDynamics",
-			// 	}
-			// 	fields := map[string]interface{}{
-			// 		"data": canData,
-			// 	}
+// 			// 	tags := map[string]interface{}{
+// 			// 		"deviceType": deviceType,
+// 			// 		"canId":      canId,
+// 			// 		"message":    "CarDynamics",
+// 			// 	}
+// 			// 	fields := map[string]interface{}{
+// 			// 		"data": canData,
+// 			// 	}
 
-			// 	output.Tags = tags
-			// 	output.Fields = fields
+// 			// 	output.Tags = tags
+// 			// 	output.Fields = fields
 
-			// 	p, err := json.Marshal(output)
-			// 	if err != nil {
-			// 		fmt.Println(err)
-			// 		return "Can data parsed wrongly"
-			// 	}
-			// 	return string(p[:])
-			// }
-			// if canId == "503" {
-			// 	var carDynamics CarDynamics
-			// 	carDynamics.BrakePressure = carCanData.BrakePressure
-			// 	carDynamics.GLateral = carCanData.GLateral
-			// 	carDynamics.GLongitudinal = carCanData.GLongitudinal
-			// 	carDynamics.GroundSpeed = carCanData.GroundSpeed
+// 			// 	p, err := json.Marshal(output)
+// 			// 	if err != nil {
+// 			// 		fmt.Println(err)
+// 			// 		return "Can data parsed wrongly"
+// 			// 	}
+// 			// 	return string(p[:])
+// 			// }
+// 			// if canId == "503" {
+// 			// 	var carDynamics CarDynamics
+// 			// 	carDynamics.BrakePressure = carCanData.BrakePressure
+// 			// 	carDynamics.GLateral = carCanData.GLateral
+// 			// 	carDynamics.GLongitudinal = carCanData.GLongitudinal
+// 			// 	carDynamics.GroundSpeed = carCanData.GroundSpeed
 
-			// 	tags := map[string]interface{}{
-			// 		"deviceType": deviceType,
-			// 		"canId":      canId,
-			// 		"message":    "CarDynamics",
-			// 	}
-			// 	fields := map[string]interface{}{
-			// 		"data": canData,
-			// 	}
+// 			// 	tags := map[string]interface{}{
+// 			// 		"deviceType": deviceType,
+// 			// 		"canId":      canId,
+// 			// 		"message":    "CarDynamics",
+// 			// 	}
+// 			// 	fields := map[string]interface{}{
+// 			// 		"data": canData,
+// 			// 	}
 
-			// 	var outputMsg OutputMsg
-			// 	outputMsg.Tags = tags
-			// 	outputMsg.Fields = fields
+// 			// 	var outputMsg OutputMsg
+// 			// 	outputMsg.Tags = tags
+// 			// 	outputMsg.Fields = fields
 
-			// 	p, err := json.Marshal(outputMsg)
-			// 	if err != nil {
-			// 		fmt.Println(err)
-			// 		return "Can data parsed wrongly"
-			// 	}
-			// 	return string(p[:])
-			// }
-			if canId == "504" {
-				var carEngine CarEngine
-				carEngine.EngineRPM = carCanData.EngineRPM
-				carEngine.Gear = carCanData.Gear
-				carEngine.ThrottlePos = carCanData.ThrottlePos
-				carEngine.SteeringAngle = carCanData.SteeringAngle
+// 			// 	p, err := json.Marshal(outputMsg)
+// 			// 	if err != nil {
+// 			// 		fmt.Println(err)
+// 			// 		return "Can data parsed wrongly"
+// 			// 	}
+// 			// 	return string(p[:])
+// 			// }
+// 			if canId == "504" {
+// 				var carEngine CarEngine
+// 				carEngine.EngineRPM = carCanData.EngineRPM
+// 				carEngine.Gear = carCanData.Gear
+// 				carEngine.ThrottlePos = carCanData.ThrottlePos
+// 				carEngine.SteeringAngle = carCanData.SteeringAngle
 
-				tags := map[string]interface{}{
-					"deviceType": deviceType,
-					"canId":      canId,
-					"message":    "CarDynamics",
-				}
-				fields := map[string]interface{}{
-					"data":          canData,
-					"engineRPM":     carEngine.EngineRPM,
-					"gear":          carEngine.Gear,
-					"throttlePos":   carEngine.ThrottlePos,
-					"steeringAngle": carEngine.SteeringAngle,
-				}
+// 				tags := map[string]interface{}{
+// 					"deviceType": deviceType,
+// 					"canId":      canId,
+// 					"message":    "CarDynamics",
+// 				}
+// 				fields := map[string]interface{}{
+// 					"data":          canData,
+// 					"engineRPM":     carEngine.EngineRPM,
+// 					"gear":          carEngine.Gear,
+// 					"throttlePos":   carEngine.ThrottlePos,
+// 					"steeringAngle": carEngine.SteeringAngle,
+// 				}
 
-				output.Tags = tags
-				output.Fields = fields
-			}
+// 				output.Tags = tags
+// 				output.Fields = fields
+// 			}
 
-		}
-	case "RaceTrack":
-		switch measurement {
-		case "SkidPad":
-			// var raceTrackSkidPad RaceTrackSkidPad
-			// json.Unmarshal([]byte(data), &raceTrackSkidPad)
-		}
-	}
-	return output.Tags, output.Fields
-}
+// 		}
+// 	case "RaceTrack":
+// 		switch measurement {
+// 		case "SkidPad":
+// 			// var raceTrackSkidPad RaceTrackSkidPad
+// 			// json.Unmarshal([]byte(data), &raceTrackSkidPad)
+// 		}
+// 	}
+// 	return output.Tags, output.Fields
+// }
 
 func mergeKeysAndValues(keys1, keys2 map[string]interface{}) map[string]interface{} {
 	merged := make(map[string]interface{})
@@ -512,11 +513,13 @@ func mergeKeysAndValues(keys1, keys2 map[string]interface{}) map[string]interfac
 
 // func parseCar(input Input) OutputMsg {
 func parseInputIntoOutput(input Input) Output {
-	var tags, parsedTags, parsedFields map[string]interface{}
+	var tags map[string]interface{}
 	var output Output
 
 	// Marshal InputMsg.Data interface{} to Json string represented in bytes
-	inputMsgData, _ := json.Marshal(input.Fields.Data)
+	// inputMsgData, _ := json.Marshal(input.Fields.Data)
+	inputMsgData := input.Fields.Data
+	// fmt.Printf("inputMsgData: ", inputMsgData)
 
 	// if message == "" {
 	// 	return "No message to parse"
@@ -530,8 +533,154 @@ func parseInputIntoOutput(input Input) Output {
 			"origin":     input.Tags.Etc,
 		}
 
-		parsedTags, parsedFields = parseMeasurementByDeviceType(input.Tags.DeviceType, input.Tags.Measurement, inputMsgData)
+		switch input.Tags.DeviceType {
+		case "Car":
+			switch input.Tags.Measurement {
 
+			case "Can":
+
+				/*
+					{
+						deviceId: "mauaracing",
+						data: {
+							canId: "504",
+							canData: "EREiIjMzREQ="
+							},
+				*/
+				// var inputMsgDataCan InputMsgDataCan
+				// err := json.Unmarshal(inputMsgData, &inputMsgDataCan)
+				// if err != nil {
+				// 	log.Fatalf("Error unmarshaling JSON: %v", err)
+				// }
+				// canId := inputMsgDataCan.CanId
+				// canData := inputMsgDataCan.CanData
+
+				/*
+					"504","EREiIjMzREQ="
+				*/
+				s := strings.Split(inputMsgData, ",")
+				canId := s[0]
+				canData := s[1]
+
+				// B64 to Byte
+				b, err := b64ToByte(canData)
+				if err != nil {
+					// fmt.Print(data)
+					log.Panic(err)
+				}
+
+				var carCanData CarCanData
+				d := protocolParserCanDataByCanId(canId, b)
+				json.Unmarshal([]byte(d), &carCanData)
+
+				if canId == "500" {
+					var gpsLatitude GPSLatitude
+					gpsLatitude.GPSLatitude = carCanData.GPSLatitude
+					tags := map[string]interface{}{
+						"deviceType": input.Tags.DeviceType,
+						"canId":      canId,
+						"message":    "GPSLatitude",
+					}
+					fields := map[string]interface{}{
+						"data":        canData,
+						"gpsLatitude": gpsLatitude.GPSLatitude,
+					}
+
+					output.Tags = tags
+					output.Fields = fields
+
+				}
+				if canId == "501" {
+					var gpsLongitude GPSLongitude
+					gpsLongitude.GPSLongitude = carCanData.GPSLongitude
+
+					tags := map[string]interface{}{
+						"deviceType": input.Tags.DeviceType,
+						"canId":      canId,
+						"message":    "GPSLongitude",
+					}
+					fields := map[string]interface{}{
+						"data":         canData,
+						"gpsLongitude": gpsLongitude.GPSLongitude,
+					}
+
+					output.Tags = tags
+					output.Fields = fields
+
+				}
+				if canId == "502" {
+					var gpsOthers GPSOthers
+					gpsOthers.GPSAltitude = carCanData.GPSAltitude
+					gpsOthers.GPSHeading = carCanData.GPSHeading
+					gpsOthers.GPSSpeed = carCanData.GPSSpeed
+					gpsOthers.GPSSatsUsed = carCanData.GPSSatsUsed
+
+					tags := map[string]interface{}{
+						"deviceType": input.Tags.DeviceType,
+						"canId":      canId,
+						"message":    "GPSOthers",
+					}
+					fields := map[string]interface{}{
+						"data":        canData,
+						"gpsAltitude": gpsOthers.GPSAltitude,
+						"gpsHeading":  gpsOthers.GPSHeading,
+						"gpsSpeed":    gpsOthers.GPSSpeed,
+						"gpsSatsUsed": gpsOthers.GPSSatsUsed,
+					}
+
+					output.Tags = tags
+					output.Fields = fields
+				}
+
+				if canId == "503" {
+					var carDynamics CarDynamics
+					carDynamics.BrakePressure = carCanData.BrakePressure
+					carDynamics.GLateral = carCanData.GLateral
+					carDynamics.GLongitudinal = carCanData.GLongitudinal
+					carDynamics.GroundSpeed = carCanData.GroundSpeed
+
+					tags := map[string]interface{}{
+						"deviceType": input.Tags.DeviceType,
+						"canId":      canId,
+						"message":    "CarDynamics",
+					}
+					fields := map[string]interface{}{
+						"data":          canData,
+						"brakePressure": carDynamics.BrakePressure,
+						"gLateral":      carDynamics.GLateral,
+						"gLongitudinal": carDynamics.GLongitudinal,
+						"groundSpeed":   carDynamics.GroundSpeed,
+					}
+					output.Tags = tags
+					output.Fields = fields
+				}
+
+				if canId == "504" {
+					var carEngine CarEngine
+					carEngine.EngineRPM = carCanData.EngineRPM
+					carEngine.Gear = carCanData.Gear
+					carEngine.ThrottlePos = carCanData.ThrottlePos
+					carEngine.SteeringAngle = carCanData.SteeringAngle
+
+					tags := map[string]interface{}{
+						"deviceType": input.Tags.DeviceType,
+						"canId":      canId,
+						"message":    "CarEngine",
+					}
+					fields := map[string]interface{}{
+						"data":          canData,
+						"engineRPM":     carEngine.EngineRPM,
+						"gear":          carEngine.Gear,
+						"throttlePos":   carEngine.ThrottlePos,
+						"steeringAngle": carEngine.SteeringAngle,
+					}
+
+					output.Tags = tags
+					output.Fields = fields
+				}
+
+			}
+		}
 	}
 
 	fmt.Printf("\n@@@@@@inputTags %v", input.Tags)
@@ -539,10 +688,13 @@ func parseInputIntoOutput(input Input) Output {
 	fmt.Printf("\n@@@@@@inputMsgData: %v", inputMsgData)
 	// fmt.Printf("\n@@@@@@outputMsg0.Timestamp: %v", outputMsg0.Timestamp)
 	fmt.Printf("\n")
-	fmt.Printf("\n@@@@@@parsedTags: %v", parsedTags)
-	fmt.Printf("\n@@@@@@parsedFields: %v", parsedFields)
+	// fmt.Printf("\n@@@@@@parsedTags: %v", parsedTags)
+	// fmt.Printf("\n@@@@@@parsedFields: %v", parsedFields)
+	fmt.Printf("\n")
+	fmt.Printf("\n+++++++++parsedTags: %v", output.Tags)
+	fmt.Printf("\n+++++++++parsedFields: %v", output.Fields)
 
-	mergedTags := mergeKeysAndValues(tags, parsedTags)
+	mergedTags := mergeKeysAndValues(tags, output.Tags)
 
 	// Timestamp_ns
 	now := time.Now()      // current local time
@@ -550,7 +702,7 @@ func parseInputIntoOutput(input Input) Output {
 
 	output.Name = input.Tags.Measurement
 	output.Tags = mergedTags
-	output.Fields = parsedFields
+	// output.Fields = parsedFields
 	output.Timestamp = uint64(nsec)
 
 	return output
@@ -724,7 +876,14 @@ func main() {
 		input.Tags.Direction = s[5]
 		input.Tags.Etc = s[6]
 
-		json.Unmarshal([]byte(incoming[1]), &input.Fields)
+		// input.Fields.Data is a unstrutured Json
+		// json.Unmarshal([]byte(incoming[1]), &input.Fields)
+		// inputMsgData, _ := json.Marshal(input.Fields.Data)
+
+		// input.Fields.Data is a string
+		input.Fields.Data = incoming[1]
+
+		fmt.Printf("input: ", input)
 
 		output = parseInputIntoOutput(input)
 		now := time.Now()      // current local time
