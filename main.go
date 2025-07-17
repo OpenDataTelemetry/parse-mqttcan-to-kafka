@@ -573,6 +573,11 @@ func parseInputIntoOutput(input Input) Output {
 				d := protocolParserCanDataByCanId(canId, b)
 				json.Unmarshal([]byte(d), &carCanData)
 
+				var sbCanData strings.Builder
+				sbCanData.WriteString(`"`)
+				sbCanData.WriteString(canData)
+				sbCanData.WriteString(`"`)
+
 				if canId == "500" {
 					var gpsLatitude GPSLatitude
 					gpsLatitude.GPSLatitude = carCanData.GPSLatitude
@@ -582,7 +587,7 @@ func parseInputIntoOutput(input Input) Output {
 						"message":    "GPSLatitude",
 					}
 					fields := map[string]interface{}{
-						"data":        canData,
+						"data":        sbCanData.String(),
 						"gpsLatitude": gpsLatitude.GPSLatitude,
 					}
 
@@ -600,7 +605,7 @@ func parseInputIntoOutput(input Input) Output {
 						"message":    "GPSLongitude",
 					}
 					fields := map[string]interface{}{
-						"data":         canData,
+						"data":         sbCanData.String(),
 						"gpsLongitude": gpsLongitude.GPSLongitude,
 					}
 
@@ -621,7 +626,7 @@ func parseInputIntoOutput(input Input) Output {
 						"message":    "GPSOthers",
 					}
 					fields := map[string]interface{}{
-						"data":        canData,
+						"data":        sbCanData.String(),
 						"gpsAltitude": gpsOthers.GPSAltitude,
 						"gpsHeading":  gpsOthers.GPSHeading,
 						"gpsSpeed":    gpsOthers.GPSSpeed,
@@ -645,7 +650,7 @@ func parseInputIntoOutput(input Input) Output {
 						"message":    "CarDynamics",
 					}
 					fields := map[string]interface{}{
-						"data":          canData,
+						"data":          sbCanData.String(),
 						"brakePressure": carDynamics.BrakePressure,
 						"gLateral":      carDynamics.GLateral,
 						"gLongitudinal": carDynamics.GLongitudinal,
@@ -668,7 +673,7 @@ func parseInputIntoOutput(input Input) Output {
 						"message":    "CarEngine",
 					}
 					fields := map[string]interface{}{
-						"data":          canData,
+						"data":          sbCanData.String(),
 						"engineRPM":     carEngine.EngineRPM,
 						"gear":          carEngine.Gear,
 						"throttlePos":   carEngine.ThrottlePos,
