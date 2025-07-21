@@ -255,7 +255,7 @@ func protocolParserCanDataByCanId(canId string, canData []byte) string {
 	case "504":
 		if len(canData) >= i+8 {
 			v := uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.EngineRPM = float64(v)
+			carCanData.EngineRPM = float64(v * 6)
 			i += 2
 
 			v = uint64(canData[i])<<8 | uint64(canData[i+1])
