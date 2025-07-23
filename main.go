@@ -886,20 +886,20 @@ func marshalToJson(msg Output) string {
 	return string(outputMsgJson[:])
 }
 
-func marshalToRawJson(msg Output) string {
-	var sb strings.Builder
-	sb.WriteString(`{"name":"`)
-	sb.WriteString(msg.Name)
-	sb.WriteString(`",`)
-	sb.WriteString(mapToJsonString(msg.Tags))
-	sb.WriteString(`,`)
-	sb.WriteString(mapToJsonString(msg.Fields))
-	sb.WriteString(`,"timestamp":`)
-	sb.WriteString(strconv.FormatUint(uint64(msg.Timestamp), 10))
-	sb.WriteString(`}`)
+// func marshalToRawJson(msg Output) string {
+// 	var sb strings.Builder
+// 	sb.WriteString(`{"name":"`)
+// 	sb.WriteString(msg.Name)
+// 	sb.WriteString(`",`)
+// 	sb.WriteString(mapToJsonString(msg.Tags))
+// 	sb.WriteString(`,`)
+// 	sb.WriteString(mapToJsonString(msg.Fields))
+// 	sb.WriteString(`,"timestamp":`)
+// 	sb.WriteString(strconv.FormatUint(uint64(msg.Timestamp), 10))
+// 	sb.WriteString(`}`)
 
-	return string(sb.String())
-}
+// 	return string(sb.String())
+// }
 
 func marshalToInflux(msg Output) string {
 	var sb strings.Builder
@@ -943,9 +943,13 @@ func mapToCommaString(m map[string]interface{}) string {
 		sb.WriteString("=")
 		switch v.(type) {
 		case string:
-			sb.WriteString(`"`)
-			sb.WriteString(v.(string))
-			sb.WriteString(`"`)
+			if k == "data" {
+				sb.WriteString(`"`)
+				sb.WriteString(v.(string))
+				sb.WriteString(`"`)
+			} else {
+				sb.WriteString(v.(string))
+			}
 		case float64:
 			sb.WriteString(strconv.FormatFloat(v.(float64), 'f', -1, 64))
 		case uint64:
@@ -970,7 +974,7 @@ func main() {
 
 	// MqttSubscriberTopic
 	var sbMqttSubTopic strings.Builder
-	sbMqttSubTopic.WriteString("OpenDataTelemetry/#")
+	sbMqttSubTopic.WriteString("OpenDataTelemetry/FSAELive/#")
 
 	// DO PUB STUFFS
 	var sbMqttPubClientId strings.Builder
@@ -1095,8 +1099,8 @@ func main() {
 		output.Name = input.Tags.Measurement
 		output.Timestamp = uint64(nsec)
 
-		// outputJsonMsg = marshalToJson(output)
-		outputJsonMsg = marshalToRawJson(output)
+		outputJsonMsg = marshalToJson(output)
+		// outputJsonMsg = marshalToRawJson(output)
 		outputInfluxMsg = marshalToInflux(output)
 
 		fmt.Printf("\n###### outputMsgJson: %v", outputJsonMsg)
