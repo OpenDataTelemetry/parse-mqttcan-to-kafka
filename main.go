@@ -673,7 +673,8 @@ func parseInputIntoOutput(input Input) Output {
 						"message":    "GPSLatitude",
 					}
 					fields := map[string]interface{}{
-						"data":        sbCanData.String(),
+						// "data":        sbCanData.String(),
+						"data":        canData,
 						"gpsLatitude": gpsLatitude.GPSLatitude,
 					}
 
@@ -691,7 +692,8 @@ func parseInputIntoOutput(input Input) Output {
 						"message":    "GPSLongitude",
 					}
 					fields := map[string]interface{}{
-						"data":         sbCanData.String(),
+						// "data":        sbCanData.String(),
+						"data":         canData,
 						"gpsLongitude": gpsLongitude.GPSLongitude,
 					}
 
@@ -712,7 +714,8 @@ func parseInputIntoOutput(input Input) Output {
 						"message":    "GPSOthers",
 					}
 					fields := map[string]interface{}{
-						"data":        sbCanData.String(),
+						// "data":        sbCanData.String(),
+						"data":        canData,
 						"gpsAltitude": gpsOthers.GPSAltitude,
 						"gpsHeading":  gpsOthers.GPSHeading,
 						"gpsSpeed":    gpsOthers.GPSSpeed,
@@ -736,7 +739,8 @@ func parseInputIntoOutput(input Input) Output {
 						"message":    "CarDynamics",
 					}
 					fields := map[string]interface{}{
-						"data":               sbCanData.String(),
+						// "data":        sbCanData.String(),
+						"data":               canData,
 						"groundSpeed":        carDynamics.GroundSpeed,
 						"gForceLateral":      carDynamics.GForceLateral,
 						"gForceLongitudinal": carDynamics.GForceLongitudinal,
@@ -759,7 +763,8 @@ func parseInputIntoOutput(input Input) Output {
 						"message":    "CarEngine",
 					}
 					fields := map[string]interface{}{
-						"data":             sbCanData.String(),
+						// "data":        sbCanData.String(),
+						"data":             canData,
 						"engineRPM":        carEngine.EngineRPM,
 						"gear":             carEngine.Gear,
 						"throttlePosition": carEngine.ThrottlePosition,
@@ -782,7 +787,8 @@ func parseInputIntoOutput(input Input) Output {
 						"message":    "CarExhaustTemperature",
 					}
 					fields := map[string]interface{}{
-						"data":                        sbCanData.String(),
+						// "data":        sbCanData.String(),
+						"data":                        canData,
 						"exhaustCylinderTemperature1": carExhaustTemperature.ExhaustCylinderTemperature1,
 						"exhaustCylinderTemperature2": carExhaustTemperature.ExhaustCylinderTemperature2,
 						"exhaustCylinderTemperature3": carExhaustTemperature.ExhaustCylinderTemperature3,
@@ -804,7 +810,8 @@ func parseInputIntoOutput(input Input) Output {
 						"message":    "CarEngineTemperature",
 					}
 					fields := map[string]interface{}{
-						"data":                     sbCanData.String(),
+						// "data":        sbCanData.String(),
+						"data":                     canData,
 						"engineCoolantTemperature": carEngineTemperature.EngineCoolantTemperature,
 						"engineOilTemperature":     carEngineTemperature.EngineOilTemperature,
 						"ecuTemperature":           carEngineTemperature.ECUTemperature,
@@ -826,7 +833,8 @@ func parseInputIntoOutput(input Input) Output {
 						"message":    "CarVitals",
 					}
 					fields := map[string]interface{}{
-						"data":              sbCanData.String(),
+						// "data":        sbCanData.String(),
+						"data":              canData,
 						"engineOilPressure": carVitals.EngineOilPressure,
 						"fuelLinePressure":  carVitals.FuelLinePressure,
 						"lambda1":           carVitals.Lambda1,
@@ -886,7 +894,7 @@ func marshalToRawJson(msg Output) string {
 	sb.WriteString(mapToJsonString(msg.Tags))
 	sb.WriteString(`,`)
 	sb.WriteString(mapToJsonString(msg.Fields))
-	sb.WriteString(`"timestamp":`)
+	sb.WriteString(`,timestamp":`)
 	sb.WriteString(strconv.FormatUint(uint64(msg.Timestamp), 10))
 	sb.WriteString(`}`)
 
@@ -935,7 +943,9 @@ func mapToCommaString(m map[string]interface{}) string {
 		sb.WriteString("=")
 		switch v.(type) {
 		case string:
+			sb.WriteString(`"`)
 			sb.WriteString(v.(string))
+			sb.WriteString(`"`)
 		case float64:
 			sb.WriteString(strconv.FormatFloat(v.(float64), 'f', -1, 64))
 		case uint64:
