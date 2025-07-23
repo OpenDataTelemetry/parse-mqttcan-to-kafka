@@ -894,7 +894,7 @@ func marshalToRawJson(msg Output) string {
 	sb.WriteString(mapToJsonString(msg.Tags))
 	sb.WriteString(`,`)
 	sb.WriteString(mapToJsonString(msg.Fields))
-	sb.WriteString(`,timestamp":`)
+	sb.WriteString(`,"timestamp":`)
 	sb.WriteString(strconv.FormatUint(uint64(msg.Timestamp), 10))
 	sb.WriteString(`}`)
 
