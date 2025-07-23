@@ -73,22 +73,45 @@ type Output struct {
 	Timestamp uint64                 `json:"timestamp"`
 }
 
-type CarDynamics struct {
-	GroundSpeed   float64 `json:"groundSpeed"`
-	GLateral      float64 `json:"gLateral"`
-	GLongitudinal float64 `json:"gLongitudinal"`
-	BrakePressure float64 `json:"brakePressure"`
-}
-
 type GPSLongitude struct {
 	GPSLongitude float64 `json:"gpsLongitude"`
 }
 
+// 0d503, 0x1F7
+type CarDynamics struct {
+	GroundSpeed        float64 `json:"groundSpeed"`
+	GForceLateral      float64 `json:"gForceLateral"`
+	GForceLongitudinal float64 `json:"gForceLongitudinal"`
+	BrakePressureFront float64 `json:"brakePressureFront"`
+}
+
+// 0d504, 0x1F8
 type CarEngine struct {
-	EngineRPM     float64 `json:"engineRPM"`
-	Gear          float64 `json:"gear"`
-	ThrottlePos   float64 `json:"ThrottlePos"`
-	SteeringAngle float64 `json:"steeringAngle"`
+	EngineRPM        float64 `json:"engineRPM"`
+	Gear             float64 `json:"gear"`
+	ThrottlePosition float64 `json:"ThrottlePos"`
+	SteeringAngle    float64 `json:"steeringAngle"`
+}
+
+// 0d505, 0x1F9
+type CarExhaustTemperature struct {
+	ExhaustCylinderTemperature1 float64 `json:"exhaustCylinderTemperature1"`
+	ExhaustCylinderTemperature2 float64 `json:"exhaustCylinderTemperature2"`
+	ExhaustCylinderTemperature3 float64 `json:"exhaustCylinderTemperature3"`
+}
+
+// 0d506, 0x1FA
+type CarEngineTemperature struct {
+	EngineCoolantTemperature float64 `json:"engineCoolantTemperature"`
+	EngineOilTemperature     float64 `json:"engineOilTemperature"`
+	ECUTemperature           float64 `json:"ecuTemperature"`
+}
+
+// 0d507, 0x1FB
+type CarVitals struct {
+	EngineOilPressure float64 `json:"engineOilPressure"`
+	FuelLinePressure  float64 `json:"fuelLinePressure"`
+	Lambda1           float64 `json:"lambda1"`
 }
 
 type GPSLatitude struct {
@@ -103,22 +126,41 @@ type GPSOthers struct {
 }
 
 type CarCanData struct {
-	EngineOilTemperature float64 `json:"engineOilTemperature"`
-	EngineOilPressure    float64 `json:"engineOilPressure"`
-	GroundSpeed          float64 `json:"groundSpeed"`
-	GLateral             float64 `json:"gLateral"`
-	GLongitudinal        float64 `json:"gLongitudinal"`
-	BrakePressure        float64 `json:"brakePressure"`
-	EngineRPM            float64 `json:"engineRPM"`
-	Gear                 float64 `json:"gear"`
-	ThrottlePos          float64 `json:"throttlePos"`
-	SteeringAngle        float64 `json:"steeringAngle"`
-	GPSAltitude          float64 `json:"gpsAltitude"`
-	GPSHeading           float64 `json:"gpsHeading"`
-	GPSSpeed             float64 `json:"gpsSpeed"`
-	GPSSatsUsed          float64 `json:"gpsSatsUsed"`
-	GPSLatitude          float64 `json:"gpsLatitude"`
-	GPSLongitude         float64 `json:"gpsLongitude"`
+	// 0d503, 0x1F7
+	GroundSpeed        float64 `json:"groundSpeed"`
+	GForceLateral      float64 `json:"gForceLateral"`
+	GForceLongitudinal float64 `json:"gForceLongitudinal"`
+	BrakePressureFront float64 `json:"brakePressureFront"`
+
+	// 0d504, 0x1F8
+	EngineRPM        float64 `json:"engineRPM"`
+	Gear             float64 `json:"gear"`
+	ThrottlePosition float64 `json:"throttlePosition"`
+	SteeringAngle    float64 `json:"steeringAngle"`
+
+	// 0d505, 0x1F9
+	ExhaustCylinderTemperature1 float64 `json:"exhaustCylinderTemperature1"`
+	ExhaustCylinderTemperature2 float64 `json:"exhaustCylinderTemperature2"`
+	ExhaustCylinderTemperature3 float64 `json:"exhaustCylinderTemperature3"`
+
+	// 0d506, 0x1FA
+	EngineCoolantTemperature float64 `json:"engineCoolantTemperature"`
+	EngineOilTemperature     float64 `json:"engineOilTemperature"`
+	ECUTemperature           float64 `json:"ecuTemperature"`
+
+	// 0d507, 0x1FB
+	EngineOilPressure float64 `json:"engineOilPressure"`
+	FuelLinePressure  float64 `json:"fuelLinePressure"`
+	Lambda1           float64 `json:"lambda1"`
+
+	// Not assigned yet
+	FuelLineTemperature float64 `json:"fuelLineTemperature"`
+	GPSAltitude         float64 `json:"gpsAltitude"`
+	GPSHeading          float64 `json:"gpsHeading"`
+	GPSSpeed            float64 `json:"gpsSpeed"`
+	GPSSatsUsed         float64 `json:"gpsSatsUsed"`
+	GPSLatitude         float64 `json:"gpsLatitude"`
+	GPSLongitude        float64 `json:"gpsLongitude"`
 }
 
 type ICCan struct {
@@ -236,26 +278,26 @@ func protocolParserCanDataByCanId(canId string, canData []byte) string {
 	case "503":
 		if len(canData) >= i+8 {
 			v := uint64(canData[i+1])<<8 | uint64(canData[i+1])
-			carCanData.GroundSpeed = float64(v) / 10
+			carCanData.GroundSpeed = float64(v)
 			i += 2
 
 			v = uint64(canData[i+1])<<8 | uint64(canData[i+1])
-			carCanData.GLateral = (float64(v) - 32768) / 100
+			carCanData.GForceLateral = float64(v) / 100
 			i += 2
 
 			v = uint64(canData[i+1])<<8 | uint64(canData[i+1])
-			carCanData.GLongitudinal = (float64(v) - 32768) / 100
+			carCanData.GForceLongitudinal = float64(v) / 100
 			i += 2
 
 			v = uint64(canData[i+1])<<8 | uint64(canData[i+1])
-			carCanData.BrakePressure = float64(v) / 10
+			carCanData.BrakePressureFront = float64(v) / 10
 			i += 2
 		}
 
 	case "504":
 		if len(canData) >= i+8 {
 			v := uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.EngineRPM = float64(v * 6)
+			carCanData.EngineRPM = float64(v) * 6
 			i += 2
 
 			v = uint64(canData[i])<<8 | uint64(canData[i+1])
@@ -263,14 +305,58 @@ func protocolParserCanDataByCanId(canId string, canData []byte) string {
 			i += 2
 
 			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.ThrottlePos = float64(v) / 100
+			carCanData.ThrottlePosition = float64(v) / 10
 			i += 2
 
 			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.SteeringAngle = (float64(v) - 32768) / 100
+			carCanData.SteeringAngle = (float64(v) - 32768) / 10
 			i += 2
 		}
 
+	case "505":
+		if len(canData) >= i+6 {
+			v := uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.ExhaustCylinderTemperature1 = float64(v)
+			i += 2
+
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.ExhaustCylinderTemperature2 = float64(v)
+			i += 2
+
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.ExhaustCylinderTemperature3 = float64(v)
+			i += 2
+		}
+
+	case "506":
+		if len(canData) >= i+6 {
+			v := uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.EngineCoolantTemperature = float64(v)
+			i += 2
+
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.EngineOilTemperature = float64(v)
+			i += 2
+
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.ECUTemperature = float64(v)
+			i += 2
+		}
+
+	case "507":
+		if len(canData) >= i+6 {
+			v := uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.EngineOilPressure = float64(v)
+			i += 2
+
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.FuelLinePressure = float64(v)
+			i += 2
+
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.Lambda1 = float64(v)
+			i += 2
+		}
 	}
 
 	p, err := json.Marshal(carCanData)
@@ -639,10 +725,10 @@ func parseInputIntoOutput(input Input) Output {
 
 				if canId == "503" {
 					var carDynamics CarDynamics
-					carDynamics.BrakePressure = carCanData.BrakePressure
-					carDynamics.GLateral = carCanData.GLateral
-					carDynamics.GLongitudinal = carCanData.GLongitudinal
 					carDynamics.GroundSpeed = carCanData.GroundSpeed
+					carDynamics.GForceLateral = carCanData.GForceLateral
+					carDynamics.GForceLongitudinal = carCanData.GForceLongitudinal
+					carDynamics.BrakePressureFront = carCanData.BrakePressureFront
 
 					tags := map[string]interface{}{
 						"deviceType": input.Tags.DeviceType,
@@ -650,11 +736,11 @@ func parseInputIntoOutput(input Input) Output {
 						"message":    "CarDynamics",
 					}
 					fields := map[string]interface{}{
-						"data":          sbCanData.String(),
-						"brakePressure": carDynamics.BrakePressure,
-						"gLateral":      carDynamics.GLateral,
-						"gLongitudinal": carDynamics.GLongitudinal,
-						"groundSpeed":   carDynamics.GroundSpeed,
+						"data":               sbCanData.String(),
+						"groundSpeed":        carDynamics.GroundSpeed,
+						"gForceLateral":      carDynamics.GForceLateral,
+						"gForceLongitudinal": carDynamics.GForceLongitudinal,
+						"brakePressureFront": carDynamics.BrakePressureFront,
 					}
 					output.Tags = tags
 					output.Fields = fields
@@ -664,7 +750,7 @@ func parseInputIntoOutput(input Input) Output {
 					var carEngine CarEngine
 					carEngine.EngineRPM = carCanData.EngineRPM
 					carEngine.Gear = carCanData.Gear
-					carEngine.ThrottlePos = carCanData.ThrottlePos
+					carEngine.ThrottlePosition = carCanData.ThrottlePosition
 					carEngine.SteeringAngle = carCanData.SteeringAngle
 
 					tags := map[string]interface{}{
@@ -673,11 +759,77 @@ func parseInputIntoOutput(input Input) Output {
 						"message":    "CarEngine",
 					}
 					fields := map[string]interface{}{
-						"data":          sbCanData.String(),
-						"engineRPM":     carEngine.EngineRPM,
-						"gear":          carEngine.Gear,
-						"throttlePos":   carEngine.ThrottlePos,
-						"steeringAngle": carEngine.SteeringAngle,
+						"data":             sbCanData.String(),
+						"engineRPM":        carEngine.EngineRPM,
+						"gear":             carEngine.Gear,
+						"throttlePosition": carEngine.ThrottlePosition,
+						"steeringAngle":    carEngine.SteeringAngle,
+					}
+
+					output.Tags = tags
+					output.Fields = fields
+				}
+
+				if canId == "505" {
+					var carExhaustTemperature CarExhaustTemperature
+					carExhaustTemperature.ExhaustCylinderTemperature1 = carCanData.ExhaustCylinderTemperature1
+					carExhaustTemperature.ExhaustCylinderTemperature2 = carCanData.ExhaustCylinderTemperature2
+					carExhaustTemperature.ExhaustCylinderTemperature3 = carCanData.ExhaustCylinderTemperature3
+
+					tags := map[string]interface{}{
+						"deviceType": input.Tags.DeviceType,
+						"canId":      canId,
+						"message":    "CarExhaustTemperature",
+					}
+					fields := map[string]interface{}{
+						"data":                        sbCanData.String(),
+						"exhaustCylinderTemperature1": carExhaustTemperature.ExhaustCylinderTemperature1,
+						"exhaustCylinderTemperature2": carExhaustTemperature.ExhaustCylinderTemperature2,
+						"exhaustCylinderTemperature3": carExhaustTemperature.ExhaustCylinderTemperature3,
+					}
+
+					output.Tags = tags
+					output.Fields = fields
+				}
+
+				if canId == "506" {
+					var carEngineTemperature CarEngineTemperature
+					carEngineTemperature.EngineCoolantTemperature = carCanData.EngineCoolantTemperature
+					carEngineTemperature.EngineOilTemperature = carCanData.EngineOilTemperature
+					carEngineTemperature.ECUTemperature = carCanData.ECUTemperature
+
+					tags := map[string]interface{}{
+						"deviceType": input.Tags.DeviceType,
+						"canId":      canId,
+						"message":    "CarEngineTemperature",
+					}
+					fields := map[string]interface{}{
+						"data":                     sbCanData.String(),
+						"engineCoolantTemperature": carEngineTemperature.EngineCoolantTemperature,
+						"engineOilTemperature":     carEngineTemperature.EngineOilTemperature,
+						"ecuTemperature":           carEngineTemperature.ECUTemperature,
+					}
+
+					output.Tags = tags
+					output.Fields = fields
+				}
+
+				if canId == "507" {
+					var carVitals CarVitals
+					carVitals.EngineOilPressure = carCanData.EngineOilPressure
+					carVitals.FuelLinePressure = carCanData.FuelLinePressure
+					carVitals.Lambda1 = carCanData.Lambda1
+
+					tags := map[string]interface{}{
+						"deviceType": input.Tags.DeviceType,
+						"canId":      canId,
+						"message":    "CarVitals",
+					}
+					fields := map[string]interface{}{
+						"data":              sbCanData.String(),
+						"engineOilPressure": carVitals.EngineOilPressure,
+						"fuelLinePressure":  carVitals.FuelLinePressure,
+						"lambda1":           carVitals.Lambda1,
 					}
 
 					output.Tags = tags
