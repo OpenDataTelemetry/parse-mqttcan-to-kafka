@@ -878,6 +878,21 @@ func marshalToJson(msg Output) string {
 	return string(outputMsgJson[:])
 }
 
+func marshalToRawJson(msg Output) string {
+	var sb strings.Builder
+	sb.WriteString(`{"name":"`)
+	sb.WriteString(msg.Name)
+	sb.WriteString(`",`)
+	sb.WriteString(mapToJsonString(msg.Tags))
+	sb.WriteString(`,`)
+	sb.WriteString(mapToJsonString(msg.Fields))
+	sb.WriteString(`"timestamp":`)
+	sb.WriteString(strconv.FormatUint(uint64(msg.Timestamp), 10))
+	sb.WriteString(`}`)
+
+	return string(sb.String())
+}
+
 func marshalToInflux(msg Output) string {
 	var sb strings.Builder
 	sb.WriteString(msg.Name)
@@ -889,6 +904,27 @@ func marshalToInflux(msg Output) string {
 	sb.WriteString(strconv.FormatUint(uint64(msg.Timestamp), 10))
 
 	return string(sb.String())
+}
+
+func mapToJsonString(m map[string]interface{}) string {
+	var sb strings.Builder
+	for k, v := range m {
+		sb.WriteString(`,"`)
+		sb.WriteString(k)
+		sb.WriteString(`":`)
+		switch v.(type) {
+		case string:
+			sb.WriteString(`"`)
+			sb.WriteString(v.(string))
+			sb.WriteString(`"`)
+		case float64:
+			sb.WriteString(strconv.FormatFloat(v.(float64), 'f', -1, 64))
+		case uint64:
+			sb.WriteString(strconv.FormatUint(v.(uint64), 10))
+		}
+
+	}
+	return strings.Replace(sb.String(), ",", "", 1)
 }
 
 func mapToCommaString(m map[string]interface{}) string {
@@ -1049,7 +1085,8 @@ func main() {
 		output.Name = input.Tags.Measurement
 		output.Timestamp = uint64(nsec)
 
-		outputJsonMsg = marshalToJson(output)
+		// outputJsonMsg = marshalToJson(output)
+		outputJsonMsg = marshalToRawJson(output)
 		outputInfluxMsg = marshalToInflux(output)
 
 		fmt.Printf("\n###### outputMsgJson: %v", outputJsonMsg)
