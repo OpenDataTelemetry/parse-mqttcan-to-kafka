@@ -282,11 +282,11 @@ func protocolParserCanDataByCanId(canId string, canData []byte) string {
 			i += 2
 
 			v = uint64(canData[i+1])<<8 | uint64(canData[i+1])
-			carCanData.GForceLateral = float64(v) / 100
+			carCanData.GForceLateral = float64(v)
 			i += 2
 
 			v = uint64(canData[i+1])<<8 | uint64(canData[i+1])
-			carCanData.GForceLongitudinal = float64(v) / 100
+			carCanData.GForceLongitudinal = float64(v)
 			i += 2
 
 			v = uint64(canData[i+1])<<8 | uint64(canData[i+1])
@@ -305,56 +305,56 @@ func protocolParserCanDataByCanId(canId string, canData []byte) string {
 			i += 2
 
 			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.ThrottlePosition = float64(v) / 10
+			carCanData.ThrottlePosition = float64(v) / 100
 			i += 2
 
 			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.SteeringAngle = (float64(v) - 32768) / 10
+			carCanData.SteeringAngle = float64(v)
 			i += 2
 		}
 
 	case "505":
 		if len(canData) >= i+6 {
 			v := uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.ExhaustCylinderTemperature1 = float64(v)
+			carCanData.ExhaustCylinderTemperature1 = float64(v) / 10
 			i += 2
 
 			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.ExhaustCylinderTemperature2 = float64(v)
+			carCanData.ExhaustCylinderTemperature2 = float64(v) / 10
 			i += 2
 
 			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.ExhaustCylinderTemperature3 = float64(v)
+			carCanData.ExhaustCylinderTemperature3 = float64(v) / 10
 			i += 2
 		}
 
 	case "506":
 		if len(canData) >= i+6 {
 			v := uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.EngineCoolantTemperature = float64(v)
+			carCanData.EngineCoolantTemperature = float64(v) / 10
 			i += 2
 
 			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.EngineOilTemperature = float64(v)
+			carCanData.EngineOilTemperature = float64(v) / 10
 			i += 2
 
 			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.ECUTemperature = float64(v)
+			carCanData.ECUTemperature = float64(v) / 10
 			i += 2
 		}
 
 	case "507":
 		if len(canData) >= i+6 {
 			v := uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.EngineOilPressure = float64(v)
+			carCanData.EngineOilPressure = float64(v) / 10
 			i += 2
 
 			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.FuelLinePressure = float64(v)
+			carCanData.FuelLinePressure = float64(v) / 10
 			i += 2
 
 			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.Lambda1 = float64(v)
+			carCanData.Lambda1 = float64(v) / 1000
 			i += 2
 		}
 	}
