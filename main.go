@@ -77,81 +77,62 @@ type GPSLongitude struct {
 	GPSLongitude float64 `json:"gpsLongitude"`
 }
 
-// 0d503, 0x1F7
-type CarDynamics struct {
+// 0d5, 0x5
+type CarCan5 struct {
 	GroundSpeed        float64 `json:"groundSpeed"`
-	GForceLateral      float64 `json:"gForceLateral"`
-	GForceLongitudinal float64 `json:"gForceLongitudinal"`
+	Gear               float64 `json:"gear"`
+	ThrottlePosition   float64 `json:"ThrottlePos"`
 	BrakePressureFront float64 `json:"brakePressureFront"`
 }
 
-// 0d504, 0x1F8
-type CarEngine struct {
-	EngineRPM        float64 `json:"engineRPM"`
-	Gear             float64 `json:"gear"`
-	ThrottlePosition float64 `json:"ThrottlePos"`
-	SteeringAngle    float64 `json:"steeringAngle"`
+// 0d6, 0x6
+type CarCan6 struct {
+	EngineRPM          float64 `json:"engineRPM"`
+	Lambda1            float64 `json:"lambda1"`
+	GForceLateral      float64 `json:"gForceLateral"`
+	GForceLongitudinal float64 `json:"gForceLongitudinal"`
 }
 
-// 0d505, 0x1F9
-type CarExhaustTemperature struct {
+// 0d7, 0x7
+type CarCan7 struct {
 	ExhaustCylinderTemperature1 float64 `json:"exhaustCylinderTemperature1"`
 	ExhaustCylinderTemperature2 float64 `json:"exhaustCylinderTemperature2"`
 	ExhaustCylinderTemperature3 float64 `json:"exhaustCylinderTemperature3"`
+	FuelUsedRaw                 float64 `json:"fuelUsedRaw"`
 }
 
-// 0d506, 0x1FA
-type CarEngineTemperature struct {
+// 0d8, 0x8
+type CarCan8 struct {
 	EngineCoolantTemperature float64 `json:"engineCoolantTemperature"`
 	EngineOilTemperature     float64 `json:"engineOilTemperature"`
-	ECUTemperature           float64 `json:"ecuTemperature"`
-}
-
-// 0d507, 0x1FB
-type CarVitals struct {
-	EngineOilPressure float64 `json:"engineOilPressure"`
-	FuelLinePressure  float64 `json:"fuelLinePressure"`
-	Lambda1           float64 `json:"lambda1"`
-}
-
-type GPSLatitude struct {
-	GPSLatitude float64 `json:"gpsLatitude"`
-}
-
-type GPSOthers struct {
-	GPSAltitude float64 `json:"gpsAltitude"`
-	GPSHeading  float64 `json:"gpsHeading"`
-	GPSSpeed    float64 `json:"gpsSpeed"`
-	GPSSatsUsed float64 `json:"gpsSatsUsed"`
+	EngineOilPressure        float64 `json:"engineOilPressure"`
+	FuelLinePressure         float64 `json:"fuelLinePressure"`
 }
 
 type CarCanData struct {
-	// 0d503, 0x1F7
+	// 0d5, 0x5
 	GroundSpeed        float64 `json:"groundSpeed"`
-	GForceLateral      float64 `json:"gForceLateral"`
-	GForceLongitudinal float64 `json:"gForceLongitudinal"`
+	Gear               float64 `json:"gear"`
+	ThrottlePosition   float64 `json:"throttlePosition"`
 	BrakePressureFront float64 `json:"brakePressureFront"`
 
-	// 0d504, 0x1F8
-	EngineRPM        float64 `json:"engineRPM"`
-	Gear             float64 `json:"gear"`
-	ThrottlePosition float64 `json:"throttlePosition"`
-	SteeringAngle    float64 `json:"steeringAngle"`
+	// 0d6, 0x6
+	EngineRPM          float64 `json:"engineRPM"`
+	Lambda1            float64 `json:"lambda1"`
+	GForceLateral      float64 `json:"gForceLateral"`
+	GForceLongitudinal float64 `json:"gForceLongitudinal"`
 
-	// 0d505, 0x1F9
+	// 0d7, 0x7
 	ExhaustCylinderTemperature1 float64 `json:"exhaustCylinderTemperature1"`
 	ExhaustCylinderTemperature2 float64 `json:"exhaustCylinderTemperature2"`
 	ExhaustCylinderTemperature3 float64 `json:"exhaustCylinderTemperature3"`
+	FuelUsedRaw                 float64 `json:"fuelUsedRaw"`
 
-	// 0d506, 0x1FA
+	// 0d8, 0x8
 	EngineCoolantTemperature float64 `json:"engineCoolantTemperature"`
 	EngineOilTemperature     float64 `json:"engineOilTemperature"`
-	ECUTemperature           float64 `json:"ecuTemperature"`
-
-	// 0d507, 0x1FB
-	EngineOilPressure float64 `json:"engineOilPressure"`
-	FuelLinePressure  float64 `json:"fuelLinePressure"`
-	Lambda1           float64 `json:"lambda1"`
+	EngineOilPressure        float64 `json:"engineOilPressure"`
+	FuelLinePressure         float64 `json:"fuelLinePressure"`
 
 	// Not assigned yet
 	FuelLineTemperature float64 `json:"fuelLineTemperature"`
@@ -226,78 +207,59 @@ func protocolParserCanDataByCanId(canId string, canData []byte) string {
 	i := 0
 
 	switch canId {
-	case "500":
-		if len(canData) >= i+8 {
-			v := int64(canData[i])<<56 |
-				int64(canData[i+1])<<48 |
-				int64(canData[i+2])<<40 |
-				int64(canData[i+3])<<32 |
-				int64(canData[i+4])<<24 |
-				int64(canData[i+5])<<16 |
-				int64(canData[i+6])<<8 |
-				int64(canData[i+7])
+	// case "500":
+	// 	if len(canData) >= i+8 {
+	// 		v := int64(canData[i])<<56 |
+	// 			int64(canData[i+1])<<48 |
+	// 			int64(canData[i+2])<<40 |
+	// 			int64(canData[i+3])<<32 |
+	// 			int64(canData[i+4])<<24 |
+	// 			int64(canData[i+5])<<16 |
+	// 			int64(canData[i+6])<<8 |
+	// 			int64(canData[i+7])
 
-			carCanData.GPSLatitude = (float64(v) - math.Pow(2, 63)) / 1e15
-			i += 8
-		}
+	// 		carCanData.GPSLatitude = (float64(v) - math.Pow(2, 63)) / 1e15
+	// 		i += 8
+	// 	}
 
-	case "501":
-		if len(canData) >= i+8 {
-			v := int64(canData[i])<<56 |
-				int64(canData[i+1])<<48 |
-				int64(canData[i+2])<<40 |
-				int64(canData[i+3])<<32 |
-				int64(canData[i+4])<<24 |
-				int64(canData[i+5])<<16 |
-				int64(canData[i+6])<<8 |
-				int64(canData[i+7])
+	// case "501":
+	// 	if len(canData) >= i+8 {
+	// 		v := int64(canData[i])<<56 |
+	// 			int64(canData[i+1])<<48 |
+	// 			int64(canData[i+2])<<40 |
+	// 			int64(canData[i+3])<<32 |
+	// 			int64(canData[i+4])<<24 |
+	// 			int64(canData[i+5])<<16 |
+	// 			int64(canData[i+6])<<8 |
+	// 			int64(canData[i+7])
 
-			carCanData.GPSLongitude = (float64(v) - math.Pow(2, 63)) / 1e15
-			i += 8
-		}
+	// 		carCanData.GPSLongitude = (float64(v) - math.Pow(2, 63)) / 1e15
+	// 		i += 8
+	// 	}
 
-	case "502":
-		if len(canData) >= i+8 {
-			v := uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.GPSAltitude = float64(v) - 32768
-			i += 2
+	// case "502":
+	// 	if len(canData) >= i+8 {
+	// 		v := uint64(canData[i])<<8 | uint64(canData[i+1])
+	// 		carCanData.GPSAltitude = float64(v) - 32768
+	// 		i += 2
 
-			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.GPSHeading = (float64(v) - 32768) / 100
-			i += 2
+	// 		v = uint64(canData[i])<<8 | uint64(canData[i+1])
+	// 		carCanData.GPSHeading = (float64(v) - 32768) / 100
+	// 		i += 2
 
-			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.GPSSpeed = float64(v)
-			i += 2
+	// 		v = uint64(canData[i])<<8 | uint64(canData[i+1])
+	// 		carCanData.GPSSpeed = float64(v)
+	// 		i += 2
 
-			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.GPSSatsUsed = float64(v)
-			i += 2
-		}
+	// 		v = uint64(canData[i])<<8 | uint64(canData[i+1])
+	// 		carCanData.GPSSatsUsed = float64(v)
+	// 		i += 2
+	// 	}
 
-	case "503":
+	case "5":
 		if len(canData) >= i+8 {
 			v := uint64(canData[i+1])<<8 | uint64(canData[i+1])
-			carCanData.GroundSpeed = float64(v)
-			i += 2
-
-			v = uint64(canData[i+1])<<8 | uint64(canData[i+1])
-			carCanData.GForceLateral = float64(v)
-			i += 2
-
-			v = uint64(canData[i+1])<<8 | uint64(canData[i+1])
-			carCanData.GForceLongitudinal = float64(v)
-			i += 2
-
-			v = uint64(canData[i+1])<<8 | uint64(canData[i+1])
-			carCanData.BrakePressureFront = float64(v) / 10
-			i += 2
-		}
-
-	case "504":
-		if len(canData) >= i+8 {
-			v := uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.EngineRPM = float64(v) * 6
+			carCanData.GroundSpeed = float64(v) / 10
 			i += 2
 
 			v = uint64(canData[i])<<8 | uint64(canData[i+1])
@@ -308,55 +270,79 @@ func protocolParserCanDataByCanId(canId string, canData []byte) string {
 			carCanData.ThrottlePosition = float64(v) / 100
 			i += 2
 
-			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.SteeringAngle = float64(v)
+			v = uint64(canData[i+1])<<8 | uint64(canData[i+1])
+			carCanData.BrakePressureFront = float64(v)
 			i += 2
 		}
 
-	case "505":
-		if len(canData) >= i+6 {
+	case "6":
+		if len(canData) >= i+8 {
 			v := uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.ExhaustCylinderTemperature1 = float64(v) / 10
-			i += 2
-
-			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.ExhaustCylinderTemperature2 = float64(v) / 10
-			i += 2
-
-			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.ExhaustCylinderTemperature3 = float64(v) / 10
-			i += 2
-		}
-
-	case "506":
-		if len(canData) >= i+6 {
-			v := uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.EngineCoolantTemperature = float64(v) / 10
-			i += 2
-
-			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.EngineOilTemperature = float64(v) / 10
-			i += 2
-
-			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.ECUTemperature = float64(v) / 10
-			i += 2
-		}
-
-	case "507":
-		if len(canData) >= i+6 {
-			v := uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.EngineOilPressure = float64(v) / 10
-			i += 2
-
-			v = uint64(canData[i])<<8 | uint64(canData[i+1])
-			carCanData.FuelLinePressure = float64(v) / 10
+			carCanData.EngineRPM = float64(v) * 60
 			i += 2
 
 			v = uint64(canData[i])<<8 | uint64(canData[i+1])
 			carCanData.Lambda1 = float64(v) / 1000
 			i += 2
+
+			v = uint64(canData[i+1])<<8 | uint64(canData[i+1])
+			carCanData.GForceLateral = float64(v) / 100
+			i += 2
+
+			v = uint64(canData[i+1])<<8 | uint64(canData[i+1])
+			carCanData.GForceLongitudinal = float64(v) / 100
+			i += 2
 		}
+
+	case "7":
+		if len(canData) >= i+8 {
+			v := uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.ExhaustCylinderTemperature1 = float64(v) / 100
+			i += 2
+
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.ExhaustCylinderTemperature2 = float64(v) / 100
+			i += 2
+
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.ExhaustCylinderTemperature3 = float64(v) / 100
+			i += 2
+
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.FuelUsedRaw = float64(v)
+			i += 2
+		}
+
+	case "8":
+		if len(canData) >= i+8 {
+			v := uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.EngineCoolantTemperature = float64(v) / 100
+			i += 2
+
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.EngineOilTemperature = float64(v) / 100
+			i += 2
+
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.EngineOilPressure = float64(v) / 100
+			i += 2
+
+			v = uint64(canData[i])<<8 | uint64(canData[i+1])
+			carCanData.FuelLinePressure = float64(v) / 100
+			i += 2
+		}
+
+		// case "507":
+		// 	if len(canData) >= i+6 {
+		// 		v := uint64(canData[i])<<8 | uint64(canData[i+1])
+		// 		carCanData.EngineOilPressure = float64(v) / 10
+		// 		i += 2
+
+		// 		v = uint64(canData[i])<<8 | uint64(canData[i+1])
+		// 		carCanData.FuelLinePressure = float64(v) / 10
+		// 		i += 2
+
+		// 	}
 	}
 
 	p, err := json.Marshal(carCanData)
@@ -664,185 +650,189 @@ func parseInputIntoOutput(input Input) Output {
 				sbCanData.WriteString(canData)
 				sbCanData.WriteString(`"`)
 
-				if canId == "500" {
-					var gpsLatitude GPSLatitude
-					gpsLatitude.GPSLatitude = carCanData.GPSLatitude
+				// if canId == "500" {
+				// 	var gpsLatitude GPSLatitude
+				// 	gpsLatitude.GPSLatitude = carCanData.GPSLatitude
+				// 	tags := map[string]interface{}{
+				// 		"deviceType": input.Tags.DeviceType,
+				// 		"canId":      canId,
+				// 		"message":    "GPSLatitude",
+				// 	}
+				// 	fields := map[string]interface{}{
+				// 		// "data":        sbCanData.String(),
+				// 		"data":        canData,
+				// 		"gpsLatitude": gpsLatitude.GPSLatitude,
+				// 	}
+
+				// 	output.Tags = tags
+				// 	output.Fields = fields
+
+				// }
+				// if canId == "501" {
+				// 	var gpsLongitude GPSLongitude
+				// 	gpsLongitude.GPSLongitude = carCanData.GPSLongitude
+
+				// 	tags := map[string]interface{}{
+				// 		"deviceType": input.Tags.DeviceType,
+				// 		"canId":      canId,
+				// 		"message":    "GPSLongitude",
+				// 	}
+				// 	fields := map[string]interface{}{
+				// 		// "data":        sbCanData.String(),
+				// 		"data":         canData,
+				// 		"gpsLongitude": gpsLongitude.GPSLongitude,
+				// 	}
+
+				// 	output.Tags = tags
+				// 	output.Fields = fields
+
+				// }
+				// if canId == "502" {
+				// 	var gpsOthers GPSOthers
+				// 	gpsOthers.GPSAltitude = carCanData.GPSAltitude
+				// 	gpsOthers.GPSHeading = carCanData.GPSHeading
+				// 	gpsOthers.GPSSpeed = carCanData.GPSSpeed
+				// 	gpsOthers.GPSSatsUsed = carCanData.GPSSatsUsed
+
+				// 	tags := map[string]interface{}{
+				// 		"deviceType": input.Tags.DeviceType,
+				// 		"canId":      canId,
+				// 		"message":    "GPSOthers",
+				// 	}
+				// 	fields := map[string]interface{}{
+				// 		// "data":        sbCanData.String(),
+				// 		"data":        canData,
+				// 		"gpsAltitude": gpsOthers.GPSAltitude,
+				// 		"gpsHeading":  gpsOthers.GPSHeading,
+				// 		"gpsSpeed":    gpsOthers.GPSSpeed,
+				// 		"gpsSatsUsed": gpsOthers.GPSSatsUsed,
+				// 	}
+
+				// 	output.Tags = tags
+				// 	output.Fields = fields
+				// }
+
+				if canId == "5" {
+					var carCan5 CarCan5
+					carCan5.GroundSpeed = carCanData.GroundSpeed
+					carCan5.Gear = carCanData.Gear
+					carCan5.ThrottlePosition = carCanData.ThrottlePosition
+					carCan5.BrakePressureFront = carCanData.BrakePressureFront
+
 					tags := map[string]interface{}{
 						"deviceType": input.Tags.DeviceType,
 						"canId":      canId,
-						"message":    "GPSLatitude",
-					}
-					fields := map[string]interface{}{
-						// "data":        sbCanData.String(),
-						"data":        canData,
-						"gpsLatitude": gpsLatitude.GPSLatitude,
-					}
-
-					output.Tags = tags
-					output.Fields = fields
-
-				}
-				if canId == "501" {
-					var gpsLongitude GPSLongitude
-					gpsLongitude.GPSLongitude = carCanData.GPSLongitude
-
-					tags := map[string]interface{}{
-						"deviceType": input.Tags.DeviceType,
-						"canId":      canId,
-						"message":    "GPSLongitude",
-					}
-					fields := map[string]interface{}{
-						// "data":        sbCanData.String(),
-						"data":         canData,
-						"gpsLongitude": gpsLongitude.GPSLongitude,
-					}
-
-					output.Tags = tags
-					output.Fields = fields
-
-				}
-				if canId == "502" {
-					var gpsOthers GPSOthers
-					gpsOthers.GPSAltitude = carCanData.GPSAltitude
-					gpsOthers.GPSHeading = carCanData.GPSHeading
-					gpsOthers.GPSSpeed = carCanData.GPSSpeed
-					gpsOthers.GPSSatsUsed = carCanData.GPSSatsUsed
-
-					tags := map[string]interface{}{
-						"deviceType": input.Tags.DeviceType,
-						"canId":      canId,
-						"message":    "GPSOthers",
-					}
-					fields := map[string]interface{}{
-						// "data":        sbCanData.String(),
-						"data":        canData,
-						"gpsAltitude": gpsOthers.GPSAltitude,
-						"gpsHeading":  gpsOthers.GPSHeading,
-						"gpsSpeed":    gpsOthers.GPSSpeed,
-						"gpsSatsUsed": gpsOthers.GPSSatsUsed,
-					}
-
-					output.Tags = tags
-					output.Fields = fields
-				}
-
-				if canId == "503" {
-					var carDynamics CarDynamics
-					carDynamics.GroundSpeed = carCanData.GroundSpeed
-					carDynamics.GForceLateral = carCanData.GForceLateral
-					carDynamics.GForceLongitudinal = carCanData.GForceLongitudinal
-					carDynamics.BrakePressureFront = carCanData.BrakePressureFront
-
-					tags := map[string]interface{}{
-						"deviceType": input.Tags.DeviceType,
-						"canId":      canId,
-						"message":    "CarDynamics",
+						"message":    "CarCan5",
 					}
 					fields := map[string]interface{}{
 						// "data":        sbCanData.String(),
 						"data":               canData,
-						"groundSpeed":        carDynamics.GroundSpeed,
-						"gForceLateral":      carDynamics.GForceLateral,
-						"gForceLongitudinal": carDynamics.GForceLongitudinal,
-						"brakePressureFront": carDynamics.BrakePressureFront,
+						"groundSpeed":        carCan5.GroundSpeed,
+						"gear":               carCan5.Gear,
+						"throttlePosition":   carCan5.ThrottlePosition,
+						"brakePressureFront": carCan5.BrakePressureFront,
 					}
 					output.Tags = tags
 					output.Fields = fields
 				}
 
-				if canId == "504" {
-					var carEngine CarEngine
-					carEngine.EngineRPM = carCanData.EngineRPM
-					carEngine.Gear = carCanData.Gear
-					carEngine.ThrottlePosition = carCanData.ThrottlePosition
-					carEngine.SteeringAngle = carCanData.SteeringAngle
+				if canId == "6" {
+					var carCan6 CarCan6
+					carCan6.EngineRPM = carCanData.EngineRPM
+					carCan6.Lambda1 = carCanData.Lambda1
+					carCan6.GForceLateral = carCanData.GForceLateral
+					carCan6.GForceLongitudinal = carCanData.GForceLongitudinal
 
 					tags := map[string]interface{}{
 						"deviceType": input.Tags.DeviceType,
 						"canId":      canId,
-						"message":    "CarEngine",
+						"message":    "CarCan6",
 					}
 					fields := map[string]interface{}{
 						// "data":        sbCanData.String(),
-						"data":             canData,
-						"engineRPM":        carEngine.EngineRPM,
-						"gear":             carEngine.Gear,
-						"throttlePosition": carEngine.ThrottlePosition,
-						"steeringAngle":    carEngine.SteeringAngle,
+						"data":               canData,
+						"engineRPM":          carCan6.EngineRPM,
+						"lambda1":            carCan6.Lambda1,
+						"gForceLateral":      carCan6.GForceLateral,
+						"gForceLongitudinal": carCan6.GForceLongitudinal,
 					}
 
 					output.Tags = tags
 					output.Fields = fields
 				}
 
-				if canId == "505" {
-					var carExhaustTemperature CarExhaustTemperature
-					carExhaustTemperature.ExhaustCylinderTemperature1 = carCanData.ExhaustCylinderTemperature1
-					carExhaustTemperature.ExhaustCylinderTemperature2 = carCanData.ExhaustCylinderTemperature2
-					carExhaustTemperature.ExhaustCylinderTemperature3 = carCanData.ExhaustCylinderTemperature3
+				if canId == "7" {
+					var carCan7 CarCan7
+					carCan7.ExhaustCylinderTemperature1 = carCanData.ExhaustCylinderTemperature1
+					carCan7.ExhaustCylinderTemperature2 = carCanData.ExhaustCylinderTemperature2
+					carCan7.ExhaustCylinderTemperature3 = carCanData.ExhaustCylinderTemperature3
+					carCan7.FuelUsedRaw = carCanData.FuelUsedRaw
 
 					tags := map[string]interface{}{
 						"deviceType": input.Tags.DeviceType,
 						"canId":      canId,
-						"message":    "CarExhaustTemperature",
+						"message":    "CarCan7",
 					}
 					fields := map[string]interface{}{
 						// "data":        sbCanData.String(),
 						"data":                        canData,
-						"exhaustCylinderTemperature1": carExhaustTemperature.ExhaustCylinderTemperature1,
-						"exhaustCylinderTemperature2": carExhaustTemperature.ExhaustCylinderTemperature2,
-						"exhaustCylinderTemperature3": carExhaustTemperature.ExhaustCylinderTemperature3,
+						"exhaustCylinderTemperature1": carCan7.ExhaustCylinderTemperature1,
+						"exhaustCylinderTemperature2": carCan7.ExhaustCylinderTemperature2,
+						"exhaustCylinderTemperature3": carCan7.ExhaustCylinderTemperature3,
+						"fuelUsedRaw":                 carCan7.FuelUsedRaw,
 					}
 
 					output.Tags = tags
 					output.Fields = fields
 				}
 
-				if canId == "506" {
-					var carEngineTemperature CarEngineTemperature
-					carEngineTemperature.EngineCoolantTemperature = carCanData.EngineCoolantTemperature
-					carEngineTemperature.EngineOilTemperature = carCanData.EngineOilTemperature
-					carEngineTemperature.ECUTemperature = carCanData.ECUTemperature
+				if canId == "8" {
+					var carCan8 CarCan8
+					carCan8.EngineCoolantTemperature = carCanData.EngineCoolantTemperature
+					carCan8.EngineOilTemperature = carCanData.EngineOilTemperature
+					carCan8.EngineOilPressure = carCanData.EngineOilPressure
+					carCan8.FuelLinePressure = carCanData.FuelLinePressure
 
 					tags := map[string]interface{}{
 						"deviceType": input.Tags.DeviceType,
 						"canId":      canId,
-						"message":    "CarEngineTemperature",
+						"message":    "CarCan8",
 					}
 					fields := map[string]interface{}{
 						// "data":        sbCanData.String(),
 						"data":                     canData,
-						"engineCoolantTemperature": carEngineTemperature.EngineCoolantTemperature,
-						"engineOilTemperature":     carEngineTemperature.EngineOilTemperature,
-						"ecuTemperature":           carEngineTemperature.ECUTemperature,
+						"engineCoolantTemperature": carCan8.EngineCoolantTemperature,
+						"engineOilTemperature":     carCan8.EngineOilTemperature,
+						"engineOilPressure":        carCan8.EngineOilPressure,
+						"fuelLinePressure":         carCan8.FuelLinePressure,
 					}
 
 					output.Tags = tags
 					output.Fields = fields
 				}
 
-				if canId == "507" {
-					var carVitals CarVitals
-					carVitals.EngineOilPressure = carCanData.EngineOilPressure
-					carVitals.FuelLinePressure = carCanData.FuelLinePressure
-					carVitals.Lambda1 = carCanData.Lambda1
+				// if canId == "507" {
+				// 	var carVitals CarVitals
+				// 	carVitals.EngineOilPressure = carCanData.EngineOilPressure
+				// 	carVitals.FuelLinePressure = carCanData.FuelLinePressure
+				// 	carVitals.Lambda1 = carCanData.Lambda1
 
-					tags := map[string]interface{}{
-						"deviceType": input.Tags.DeviceType,
-						"canId":      canId,
-						"message":    "CarVitals",
-					}
-					fields := map[string]interface{}{
-						// "data":        sbCanData.String(),
-						"data":              canData,
-						"engineOilPressure": carVitals.EngineOilPressure,
-						"fuelLinePressure":  carVitals.FuelLinePressure,
-						"lambda1":           carVitals.Lambda1,
-					}
+				// 	tags := map[string]interface{}{
+				// 		"deviceType": input.Tags.DeviceType,
+				// 		"canId":      canId,
+				// 		"message":    "CarVitals",
+				// 	}
+				// 	fields := map[string]interface{}{
+				// 		// "data":        sbCanData.String(),
+				// 		"data":              canData,
+				// 		"engineOilPressure": carVitals.EngineOilPressure,
+				// 		"fuelLinePressure":  carVitals.FuelLinePressure,
+				// 		"lambda1":           carVitals.Lambda1,
+				// 	}
 
-					output.Tags = tags
-					output.Fields = fields
-				}
+				// 	output.Tags = tags
+				// 	output.Fields = fields
+				// }
 
 			}
 		}
