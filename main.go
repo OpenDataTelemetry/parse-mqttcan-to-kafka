@@ -110,6 +110,8 @@ type CarCan8 struct {
 }
 
 type CarCanData struct {
+	// 0d40
+	Error string `json:"error"`
 	// 0d5, 0x5
 	GroundSpeed        float64 `json:"groundSpeed"`
 	Gear               float64 `json:"gear"`
@@ -255,6 +257,9 @@ func protocolParserCanDataByCanId(canId string, canData []byte) string {
 	// 		carCanData.GPSSatsUsed = float64(v)
 	// 		i += 2
 	// 	}
+
+	case "40":
+		carCanData.Error = "error 40"
 
 	case "5":
 		if len(canData) >= i+8 {
@@ -711,6 +716,22 @@ func parseInputIntoOutput(input Input) Output {
 				// 	output.Tags = tags
 				// 	output.Fields = fields
 				// }
+
+				if canId == "40" {
+
+					tags := map[string]interface{}{
+						"deviceType": input.Tags.DeviceType,
+						"canId":      canId,
+						"message":    "CarCan5",
+					}
+					fields := map[string]interface{}{
+						// "data":        sbCanData.String(),
+						"data":  canData,
+						"error": carCanData.Error,
+					}
+					output.Tags = tags
+					output.Fields = fields
+				}
 
 				if canId == "5" {
 					var carCan5 CarCan5
